@@ -14,6 +14,7 @@ The main tools available:
 
 * Java 6 or higher
 * Scala 2.11,or 2.12
+* Apache Spark 2.3.X
 
 
 ## Getting Spark Tools ##

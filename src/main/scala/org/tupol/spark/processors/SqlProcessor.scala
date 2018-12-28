@@ -71,7 +71,7 @@ abstract class SqlProcessor extends SparkRunnable[SqlProcessorConfig, DataFrame]
 }
 
 case class SqlProcessorConfig(inputTables: Map[String, FileDataFrameLoaderConfig], inputVariables: Map[String, String],
-    outputConfig: FileDataFrameSaverConfig, sql: String) {
+  outputConfig: FileDataFrameSaverConfig, sql: String) {
 
   def renderedSql: String = SqlProcessorConfig.replaceVariables(sql, inputVariables)
 }
@@ -88,12 +88,12 @@ object SqlProcessorConfig extends Configurator[SqlProcessorConfig] with Logging 
   def validationNel(config: Config): ValidationNel[Throwable, SqlProcessorConfig] = {
     import scalaz.syntax.applicative._
 
-    val sql = config.extract[String]("sql.path").map { path =>
+    val sql = config.extract[String]("input.sql.path").map { path =>
       fuzzyLoadTextResourceFile(path).getOrElse {
         logError("Failed loading the SQL query from the given path!")
         "UNABLE TO LOAD SQL FROM THE GIVEN PATH!"
       }
-    }.orElse(config.extract[String]("sql.line"))
+    }.orElse(config.extract[String]("input.sql.line"))
 
     config.extract[Map[String, FileDataFrameLoaderConfig]]("input.tables") |@|
       config.extract[Option[Map[String, String]]]("input.variables").map(_.getOrElse(Map())) |@|
