@@ -25,6 +25,11 @@ For more details check the [Input Formats](#input-formats) section.
   - the input file(s) path
   - it can be a local file or an hdfs file or an hdfs compatible file (like s3 or wasb)
   - it accepts patterns like `hdfs://some/path/2018-01-*/hours=0*/*`
+- `FormatConverter.input.schema` *Optional*
+  - this is an optional parameter that represents the json Apache Spark schema that should be enforced on the input data
+  - this schema can be easily obtained from a `DataFrame` by calling the `prettyJson` function
+  - due to it's complex structure, this parameter can not be passed as a command line argument, but it can only be
+    passed through the `application.conf` file
 - `FormatConverter.output.path` **Required**
   - the output folder path
   - it can be a local file or an hdfs file or an hdfs compatible file (like s3 or wasb)
@@ -45,11 +50,10 @@ they should exist in the result of the given sql
     is appropriate for the application
   - for example, one might target a partition number so that the partition file size inside a partition folder are
     around 100 MB
-- `FormatConverter.input.schema` *Optional*
-  - this is an optional parameter that represents the json Apache Spark schema that should be enforced on the input data
-  - this schema can be easily obtained from a `DataFrame` by calling the `prettyJson` function
-  - due to it's complex structure, this parameter can not be passed as a command line argument, but it can only be
-    passed through the `application.conf` file
+
+The `FormatConverter` uses the [`FileDataFrameLoader`](https://github.com/tupol/spark-utils/blob/master/docs/file-data-frame-loader.md)
+and [`FileDataFrameSaver`](https://github.com/tupol/spark-utils/blob/master/docs/file-data-frame-saver.md) frameworks.
+For more details please check the [`spark-utils`](https://github.com/tupol/spark-utils) project.
 
 ### Input Formats
 
@@ -59,12 +63,12 @@ they should exist in the result of the given sql
   - header defining if the reader should take the first row of the csv file as the column names
   - all types will be assumed string
   - the default value is `false`
-  - if there is a `header` property also defined in the `FormatConverter.input.parserOptions` section, this one will override it
+  - if there is a `header` property also defined in the `FormatConverter.input.options` section, this one will override it
 - `FormatConverter.input.delimiter` *Optional*
   - delimiter defining which separator has to be taken into account to distinct the data in the csv file
   - the default value is `,`
-  - if there is a `delimiter` property also defined in the `FormatConverter.input.parserOptions` section, this one will override it
-- `FormatConverter.input.parserOptions` *Optional*
+  - if there is a `delimiter` property also defined in the `FormatConverter.input.options` section, this one will override it
+- `FormatConverter.input.options` *Optional*
   - due to it's complex structure, this parameter can not be passed as a command line argument, but it can only be
     passed through the `application.conf` file
   - the csv parser options are defined [here](https://spark.apache.org/docs/2.1.1/api/java/org/apache/spark/sql/DataFrameReader.html#csv(java.lang.String...)).
@@ -108,8 +112,8 @@ they should exist in the result of the given sql
 - `FormatConverter.input.rowTag` **Required**
   - the XML tag name that will become rows of data
   - if the row tag is the root tag the output will be just one record
-  - if there is a `rowTag` property also defined in the `FormatConverter.input.parserOptions` section, this one will override it
-- `FormatConverter.input.parserOptions` *Optional*
+  - if there is a `rowTag` property also defined in the `FormatConverter.input.options` section, this one will override it
+- `FormatConverter.input.options` *Optional*
   - due to it's complex structure, this parameter can not be passed as a command line argument, but it can only be passed through the `application.conf` file
    - Specific Databricks XML parser options; more details are available [here](https://github.com/databricks/spark-xml)
       - `path`: Location of files. Similar to Spark can accept standard Hadoop globbing expressions.
@@ -129,7 +133,7 @@ they should exist in the result of the given sql
 
 #### JSON Parameters
 
-- `FormatConverter.input.parserOptions` *Optional*
+- `FormatConverter.input.options` *Optional*
   - due to it's complex structure, this parameter can not be passed as a command line argument, but it can only be passed through the `application.conf` file
   - the json parser options are defined [here](https://spark.apache.org/docs/2.1.1/api/java/org/apache/spark/sql/DataFrameReader.html#json(java.lang.String...)).
     - `primitivesAsString` (default `false`): infers all primitive values as a string type
@@ -146,6 +150,40 @@ they should exist in the result of the given sql
       - `PERMISSIVE` : sets other fields to null when it meets a corrupted record, and puts the malformed string into a new field configured by `columnNameOfCorruptRecord`. When a schema is set by user, it sets null for extra fields.
       - `DROPMALFORMED` : ignores the whole corrupted records.
       - `FAILFAST` : throws an exception when it meets corrupted records.
+
+## Usage Examples
+
+In the [`examples`](examples/format-converter) folder there are multiple examples on how the format converter can be used in
+real life applications.
+
+The [`convert-format.sh`](examples/format-converter/convert-format.sh) is an example on how the actual application can be used.
+Taking out the preparation part, it comes down to the following lines, which can be used in different setups, including
+the `cluster-mode`.
+
+```
+spark-submit  -v  \
+...
+--class org.tupol.spark.processors.FormatConverter \
+--name SimpleSqlProcessor \
+--files $APPLICATION_CONF \
+--jars "$JARS" \
+$SPARK_TOOLS_JAR
+```
+
+Notice the following variables:
+- `$APPLICATION_CONF` needs to point to a file actually called `application.conf`, somewhere int the local file system.
+- `$JARS` needs to contains the comma separated list of dependency jars; as of now this list contains the following jars:
+`config-1.3.0.jar`, `scalaz-core_2.11-7.2.26.jar`, `scala-utils_2.11-0.2.0-SNAPSHOT.jar`, `spark-utils_2.11-0.2.0-SNAPSHOT.jar`
+- `$SPARK_TOOLS_JAR` needs to contain the local path to the actual `spark-tools` jar; as of not this is `spark-tools_2.11-0.1.0-SNAPSHOT.jar`
+
+Configuration Examples Description
+
+- [`sample-application-1.conf`](examples/format-converter/sample-application-1.conf)
+Simple Json to Csv conversion with partitioning columns
+- [`sample-application-2.conf`](examples/format-converter/sample-application-2.conf)
+Csv parse with input schema specified to Json conversion
+- [`sample-application-3.conf`](examples/format-converter/sample-application-3.conf)
+Csv parse with schema inference to Json conversion
 
 
 ## References

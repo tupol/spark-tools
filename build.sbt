@@ -1,4 +1,3 @@
-
 name := "spark-tools"
 
 organization := "org.tupol"
@@ -33,6 +32,7 @@ libraryDependencies ++= Seq(
   "com.databricks" %% "spark-xml" % "0.4.1" % "test",
   "com.databricks" %% "spark-avro" % "4.0.0" % "test"
 )
+
 // ------------------------------
 // TESTING
 parallelExecution in Test := false
@@ -46,7 +46,6 @@ publishArtifact in Test := true
 
 scoverage.ScoverageKeys.coverageExcludedPackages := "org.apache.spark.ml.param.shared.*"
 scoverage.ScoverageKeys.coverageExcludedFiles := ".*BuildInfo.*"
-
 
 // ------------------------------
 // PUBLISHING
@@ -68,7 +67,6 @@ publishArtifact in Test := true
 publishMavenStyle := true
 
 pomIncludeRepository := { _ => false }
-
 
 licenses := Seq("MIT-style" -> url("https://opensource.org/licenses/MIT"))
 

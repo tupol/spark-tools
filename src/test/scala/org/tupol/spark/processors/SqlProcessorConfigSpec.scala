@@ -25,6 +25,16 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |        format: "json"
         |      }
         |    }
+        |    variables {
+        |       table_name: "table1"
+        |       columns: "*"
+        |    }
+        |
+        |    # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
+        |    # The query must be written on a single line.
+        |    # All quotes must be escaped.
+        |    sql.line:"SELECT * FROM table1 where table1.id=\"1002\""
+        |    sql.path: "src/test/resources/SqlProcessor/test.sql"
         |  }
         |  output: {
         |    # The path where the results will be saved
@@ -34,19 +44,12 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |    # The output partition columns
         |    partition.columns: ["id", "timestamp"]
         |  }
-        |  # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
-        |  # The query must be written on a single line.
-        |  # All quotes must be escaped.
-        |  sql.line:"SELECT * FROM table1 where table1.id=\"1002\""
-        |  sql.path: "src/test/resources/SqlProcessor/test.sql"
         |
-      """.stripMargin
-    )
+      """.stripMargin)
 
     val expectedInputTablePaths = Map(
       "table1" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file1.json", JsonParserConfiguration()),
-      "table2" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file2.json", JsonParserConfiguration())
-    )
+      "table2" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file2.json", JsonParserConfiguration()))
 
     val expectedSql =
       """-- Some comment
@@ -57,8 +60,10 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |-- Some filter comment
         |table1.id="1001"""".stripMargin
 
+    val expectedVariables = Map("table_name" -> "table1", "columns" -> "*")
+
     val outputConfig = FileDataFrameSaverConfig("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]("id", "timestamp"))
-    val expectedResult = SqlProcessorConfig(expectedInputTablePaths, outputConfig, expectedSql)
+    val expectedResult = SqlProcessorConfig(expectedInputTablePaths, expectedVariables, outputConfig, expectedSql)
 
     SqlProcessorConfig(config).get shouldBe expectedResult
 
@@ -80,6 +85,11 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |        format: "json"
         |      }
         |    }
+        |    # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
+        |    # The query must be written on a single line.
+        |    # All quotes must be escaped.
+        |    sql.line="SELECT * FROM table1 where table1.id=\"1002\""
+        |    sql: { path: "/SqlProcessor/test.sql" }
         |  }
         |  output: {
         |    # The path where the results will be saved
@@ -89,18 +99,11 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |    # The output partition columns
         |    #partition.columns: ["id", "timestamp"]
         |  }
-        |  # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
-        |  # The query must be written on a single line.
-        |  # All quotes must be escaped.
-        |  sql.line="SELECT * FROM table1 where table1.id=\"1002\""
-        |  sql: { path: "/SqlProcessor/test.sql" }
-      """.stripMargin
-    )
+      """.stripMargin)
 
     val expectedInputTablePaths = Map(
       "table1" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file1.json", JsonParserConfiguration()),
-      "table2" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file2.json", JsonParserConfiguration())
-    )
+      "table2" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file2.json", JsonParserConfiguration()))
 
     val expectedSql =
       """-- Some comment
@@ -135,6 +138,11 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |        format: "json"
         |      }
         |    }
+        |    # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
+        |    # The query must be written on a single line.
+        |    # All quotes must be escaped.
+        |    sql.line="SELECT * FROM table1 where table1.id=\"1002\""
+        |    # sql: { path: "src/test/resources/SqlProcessor/test.sql" }
         |  }
         |  output: {
         |    # The path where the results will be saved
@@ -144,19 +152,12 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |    # The output partition columns
         |    #partition.columns: ["id", "timestamp"]
         |  }
-        |  # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
-        |  # The query must be written on a single line.
-        |  # All quotes must be escaped.
-        |  sql.line="SELECT * FROM table1 where table1.id=\"1002\""
-        |  # sql: { path: "src/test/resources/SqlProcessor/test.sql" }
         |
-      """.stripMargin
-    )
+      """.stripMargin)
 
     val expectedInputTablePaths = Map(
       "table1" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file1.json", JsonParserConfiguration()),
-      "table2" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file2.json", JsonParserConfiguration())
-    )
+      "table2" -> FileDataFrameLoaderConfig("../../../src/test/resources/SqlProcessor/file2.json", JsonParserConfiguration()))
 
     val expectedSql =
       """SELECT * FROM table1 where table1.id="1002"""".stripMargin
@@ -184,6 +185,11 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |        format: "json"
         |      }
         |    }
+        |    # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
+        |    # The query must be written on a single line.
+        |    # All quotes must be escaped.
+        |    # sql.line="SELECT * FROM table1 where table1.id=\"1002\""
+        |    #sql: { path: "src/test/resources/SqlProcessor/test.sql" }
         |  }
         |  output: {
         |    # The path where the results will be saved
@@ -193,13 +199,7 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |    # The output partition columns
         |    partition.columns: ["id", "timestamp"]
         |  }
-        |  # The query that will be applied on the input tables; the results will be saved into the SqlProcessor.output.path file
-        |  # The query must be written on a single line.
-        |  # All quotes must be escaped.
-        |  # sql.line="SELECT * FROM table1 where table1.id=\"1002\""
-        |  #sql: { path: "src/test/resources/SqlProcessor/test.sql" }
-      """.stripMargin
-    )
+      """.stripMargin)
 
     SqlProcessorConfig(config) shouldBe a[Failure[_]]
 
@@ -229,8 +229,7 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
 
     val result = SqlProcessorConfig.replaceVariables(
       input,
-      Map("columns" -> "a, b", "table.name" -> "some_table", "condition_1" -> "b='x'", "condition-2" -> "why")
-    )
+      Map("columns" -> "a, b", "table.name" -> "some_table", "condition_1" -> "b='x'", "condition-2" -> "why"))
 
     result shouldBe "SELECT a, b FROM some_table WHERE b='x' AND a = '{why}'"
   }

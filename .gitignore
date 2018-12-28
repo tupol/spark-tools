@@ -56,6 +56,11 @@ fabric.properties
 
 # Others
 .DS_Store
+docs/**/*.jar
+docs/**/libs
+docs/**/tmp
+docs/**/out-example-*
+**/spark-warehouse
 
 ### SBT template
 # Simple Build Tool
