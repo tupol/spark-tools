@@ -28,7 +28,7 @@ import org.apache.spark.sql.{ DataFrame, SparkSession }
 import org.tupol.spark.implicits._
 import org.tupol.spark.io.{ FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration }
 import org.tupol.spark.utils._
-import org.tupol.spark.{ Logging, SparkRunnable }
+import org.tupol.spark.{ Logging, SparkApp }
 import org.tupol.utils._
 import org.tupol.utils.config.Configurator
 
@@ -38,41 +38,42 @@ import scala.util.Try
  * The SqlProcessor is a base class that can support multiple implementation, mainly designed to support registering
  * custom SQL functions (UDFs) to make them available while running the queries.
  */
-abstract class SqlProcessor extends SparkRunnable[SqlProcessorConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
+abstract class SqlProcessor extends SparkApp[SqlProcessorContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
 
-  def registerSqlFunctions: Try[Unit]
+  def registerSqlFunctions: Unit
 
-  override def buildConfig(config: Config): Try[SqlProcessorConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = SqlProcessorConfig(config)
+  override def createContext(config: Config): SqlProcessorContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration] =
+    SqlProcessorContext(config).get
 
-  override def run(implicit spark: SparkSession, config: SqlProcessorConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]): Try[DataFrame] =
-    for {
-      _ <- registerSqlFunctions
+  override def run(implicit spark: SparkSession, config: SqlProcessorContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]): DataFrame =
+    {
+      Try(registerSqlFunctions)
         .logSuccess(_ => logInfo(s"Successfully registered the custom SQL functions."))
         .logFailure(logError(s"Failed to register the custom SQL functions.", _))
-      _ <- config.inputTables.map {
+      config.inputTables.map {
         case (tableName, inputConfig) =>
-          spark.source(inputConfig).read.map(_.createOrReplaceTempView(tableName))
-      }.toSeq.allOkOrFail
-      sqlResult <- Try(spark.sql(config.renderedSql))
+          spark.source(inputConfig).read.createOrReplaceTempView(tableName)
+      }
+      val sqlResult = Try(spark.sql(config.renderedSql))
         .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${config.renderedSql}."))
         .logFailure(logError(s"Failed to run the following query:\n${config.renderedSql}.", _))
-      writtenResult <- sqlResult.sink(config.outputConfig).write
-    } yield writtenResult
+        .get
+      sqlResult.sink(config.outputConfig).write
+    }
 
 }
 
-case class SqlProcessorConfig[SourceConfig <: FormatAwareDataSourceConfiguration, SinkConfig <: FormatAwareDataSinkConfiguration](inputTables: Map[String, SourceConfig], inputVariables: Map[String, String], outputConfig: SinkConfig, sql: String) {
-
-  def renderedSql: String = SqlProcessorConfig.replaceVariables(sql, inputVariables)
+case class SqlProcessorContext[SourceConfig <: FormatAwareDataSourceConfiguration, SinkConfig <: FormatAwareDataSinkConfiguration](inputTables: Map[String, SourceConfig], inputVariables: Map[String, String], outputConfig: SinkConfig, sql: String) {
+  def renderedSql: String = SqlProcessorContext.replaceVariables(sql, inputVariables)
 }
 
-object SqlProcessorConfig extends Configurator[SqlProcessorConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] with Logging {
+object SqlProcessorContext extends Configurator[SqlProcessorContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] with Logging {
 
   import com.typesafe.config.Config
   import org.tupol.utils.config._
   import scalaz.ValidationNel
 
-  def validationNel(config: Config): ValidationNel[Throwable, SqlProcessorConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = {
+  def validationNel(config: Config): ValidationNel[Throwable, SqlProcessorContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = {
     import scalaz.syntax.applicative._
 
     val sql = config.extract[String]("input.sql.path").map { path =>
@@ -86,7 +87,7 @@ object SqlProcessorConfig extends Configurator[SqlProcessorConfig[_ <: FormatAwa
       config.extract[Option[Map[String, String]]]("input.variables").map(_.getOrElse(Map())) |@|
       config.extract[FormatAwareDataSinkConfiguration]("output") |@|
       sql apply
-      SqlProcessorConfig.apply
+      SqlProcessorContext.apply
   }
 
   def replaceVariables(text: String, variables: Map[String, String]): String = {

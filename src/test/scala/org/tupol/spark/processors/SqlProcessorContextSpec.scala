@@ -7,7 +7,7 @@ import org.tupol.spark.io.{ FileSourceConfiguration, FileSinkConfiguration, Form
 
 import scala.util.Failure
 
-class SqlProcessorConfigSpec extends FunSuite with Matchers {
+class SqlProcessorContextSpec extends FunSuite with Matchers {
 
   test("Load configuration with external sql local path even if sql.line is specified") {
 
@@ -63,9 +63,9 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
     val expectedVariables = Map("table_name" -> "table1", "columns" -> "*")
 
     val outputConfig = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]("id", "timestamp"))
-    val expectedResult = SqlProcessorConfig(expectedInputTablePaths, expectedVariables, outputConfig, expectedSql)
+    val expectedResult = SqlProcessorContext(expectedInputTablePaths, expectedVariables, outputConfig, expectedSql)
 
-    SqlProcessorConfig(config).get shouldBe expectedResult
+    SqlProcessorContext(config).get shouldBe expectedResult
 
   }
 
@@ -115,10 +115,10 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |table1.id="1001"""".stripMargin
 
     val outputConfig = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]())
-    val expectedResult = SqlProcessorConfig(expectedInputTablePaths, Map(), outputConfig,
+    val expectedResult = SqlProcessorContext(expectedInputTablePaths, Map(), outputConfig,
       expectedSql)
 
-    SqlProcessorConfig(config).get shouldBe expectedResult
+    SqlProcessorContext(config).get shouldBe expectedResult
 
   }
 
@@ -163,9 +163,9 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
       """SELECT * FROM table1 where table1.id="1002"""".stripMargin
 
     val outputConfig = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]())
-    val expectedResult = SqlProcessorConfig(expectedInputTablePaths, Map(), outputConfig, expectedSql)
+    val expectedResult = SqlProcessorContext(expectedInputTablePaths, Map(), outputConfig, expectedSql)
 
-    SqlProcessorConfig(config).get shouldBe expectedResult
+    SqlProcessorContext(config).get shouldBe expectedResult
 
   }
 
@@ -201,7 +201,7 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
         |  }
       """.stripMargin)
 
-    SqlProcessorConfig(config) shouldBe a[Failure[_]]
+    SqlProcessorContext(config) shouldBe a[Failure[_]]
 
   }
 
@@ -209,7 +209,7 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
 
     val input = "SELECT {{columns}} FROM {{table.name}} WHERE {{condition_1}} AND a = '{{{condition-2}}}'"
 
-    val result = SqlProcessorConfig.replaceVariables(input, Map())
+    val result = SqlProcessorContext.replaceVariables(input, Map())
 
     result shouldBe input
   }
@@ -218,7 +218,7 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
 
     val input = "SELECT {{columns}} FROM {{table.name}} WHERE {{condition_1}} AND a = '{{{condition-2}}}'"
 
-    val result = SqlProcessorConfig.replaceVariables(input, Map("columns" -> "a, b", "table.name" -> "some_table"))
+    val result = SqlProcessorContext.replaceVariables(input, Map("columns" -> "a, b", "table.name" -> "some_table"))
 
     result shouldBe "SELECT a, b FROM some_table WHERE {{condition_1}} AND a = '{{{condition-2}}}'"
   }
@@ -227,7 +227,7 @@ class SqlProcessorConfigSpec extends FunSuite with Matchers {
 
     val input = "SELECT {{columns}} FROM {{table.name}} WHERE {{condition_1}} AND a = '{{{condition-2}}}'"
 
-    val result = SqlProcessorConfig.replaceVariables(
+    val result = SqlProcessorContext.replaceVariables(
       input,
       Map("columns" -> "a, b", "table.name" -> "some_table", "condition_1" -> "b='x'", "condition-2" -> "why"))
 

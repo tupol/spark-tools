@@ -25,15 +25,13 @@ package org.tupol.spark.processors
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.{ DataFrame, SparkSession }
-import org.tupol.spark.SparkRunnable
+import org.tupol.spark.SparkApp
 import org.tupol.spark.implicits._
 import org.tupol.spark.io._
 import org.tupol.utils.config.Configurator
 
-import scala.util.Try
-
 /**
- * Load a file into a DataFrame and save it as a file in the specified path.
+ * Load a file into a [[DataFrame]] and save it as a file in the specified path.
  *
  * <ul>
  *  <li>For the XML converter see more details here:
@@ -46,38 +44,37 @@ import scala.util.Try
  *      [[https://github.com/databricks/spark-avro]]</li>
  * </ul>
  */
-object FormatConverter extends SparkRunnable[FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
+object FormatConverter extends SparkApp[FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
 
-  override def buildConfig(config: Config): Try[FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = FormatConverterConfig(config)
+  override def createContext(config: Config): FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration] = FormatConverterContext(config).get
 
-  override def run(implicit spark: SparkSession, config: FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]): Try[DataFrame] =
-    for {
-      inputData <- spark.source(config.input).read
-      writeableData = if (config.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
-      writtenData <- writeableData.sink(config.output).write
-    } yield writtenData
+  override def run(implicit spark: SparkSession, context: FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]): DataFrame = {
+    val inputData = spark.source(context.input).read
+    val writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
+    writeableData.sink(context.output).write
+  }
 
 }
 
 /**
- * Configuration class for the [[FormatConverter]]
+ * Context class for the [[FormatConverter]]
  *
- * @param input
- * @param output
+ * @param input data source
+ * @param output data sink
  */
-case class FormatConverterConfig[SourceConfig <: FormatAwareDataSourceConfiguration, SinkConfig <: FormatAwareDataSinkConfiguration](val input: SourceConfig, val output: SinkConfig)
+case class FormatConverterContext[SourceConfig <: FormatAwareDataSourceConfiguration, SinkConfig <: FormatAwareDataSinkConfiguration](val input: SourceConfig, val output: SinkConfig)
 
-object FormatConverterConfig extends Configurator[FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] {
+object FormatConverterContext extends Configurator[FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] {
 
   import com.typesafe.config.Config
   import scalaz.ValidationNel
 
-  def validationNel(config: Config): ValidationNel[Throwable, FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = {
+  def validationNel(config: Config): ValidationNel[Throwable, FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = {
     import org.tupol.utils.config._
     import scalaz.syntax.applicative._
 
     config.extract[FormatAwareDataSourceConfiguration]("input") |@|
       config.extract[FormatAwareDataSinkConfiguration]("output") apply
-      FormatConverterConfig.apply
+      FormatConverterContext.apply
   }
 }
