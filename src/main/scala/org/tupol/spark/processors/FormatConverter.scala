@@ -25,7 +25,7 @@ package org.tupol.spark.processors
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.{ DataFrame, SparkSession }
-import org.tupol.spark.SparkRunnable
+import org.tupol.spark.SparkApp
 import org.tupol.spark.implicits._
 import org.tupol.spark.io._
 import org.tupol.utils.config.Configurator
@@ -33,7 +33,7 @@ import org.tupol.utils.config.Configurator
 import scala.util.Try
 
 /**
- * Load a file into a DataFrame and save it as a file in the specified path.
+ * Load a file into a [[DataFrame]] and save it as a file in the specified path.
  *
  * <ul>
  *  <li>For the XML converter see more details here:
@@ -46,7 +46,7 @@ import scala.util.Try
  *      [[https://github.com/databricks/spark-avro]]</li>
  * </ul>
  */
-object FormatConverter extends SparkRunnable[FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
+object FormatConverter extends SparkApp[FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
 
   override def buildConfig(config: Config): Try[FormatConverterConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = FormatConverterConfig(config)
 

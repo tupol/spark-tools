@@ -28,7 +28,7 @@ import org.apache.spark.sql.{ DataFrame, SparkSession }
 import org.tupol.spark.implicits._
 import org.tupol.spark.io.{ FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration }
 import org.tupol.spark.utils._
-import org.tupol.spark.{ Logging, SparkRunnable }
+import org.tupol.spark.{ Logging, SparkApp }
 import org.tupol.utils._
 import org.tupol.utils.config.Configurator
 
@@ -38,7 +38,7 @@ import scala.util.Try
  * The SqlProcessor is a base class that can support multiple implementation, mainly designed to support registering
  * custom SQL functions (UDFs) to make them available while running the queries.
  */
-abstract class SqlProcessor extends SparkRunnable[SqlProcessorConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
+abstract class SqlProcessor extends SparkApp[SqlProcessorConfig[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
 
   def registerSqlFunctions: Try[Unit]
 

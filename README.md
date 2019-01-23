@@ -23,18 +23,23 @@ Spark Tools is published to Sonatype OSS and Maven Central:
 
 - Group id / organization: `org.tupol`
 - Artifact id / name: `spark-tools`
-- Latest version is `0.1.0`
+- Latest version is `0.2.0-SNAPSHOT`
 
 Usage with SBT, adding a dependency to the latest version of tools to your sbt build definition file:
 
 ```scala
-libraryDependencies += "org.tupol" %% "spark-tools" % "0.1.0"
+libraryDependencies += "org.tupol" %% "spark-tools" % "0.2.0-SNAPSHOT"
 ```
 
 
 ## What's new? ##
 
-### 0.1.0 ###
+**0.2.0-SNAPSHOT**
+
+ - Started using `spark-utils` `0.3.0-SNAPSHOT`
+
+**0.1.0**
+
  - Added `FormatConverter`
  - Added `SqlProcessor` base class
  - Added `SimpleSqlProcessor` implementation
