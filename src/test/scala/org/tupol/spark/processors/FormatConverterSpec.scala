@@ -17,16 +17,16 @@ class FormatConverterSpec extends FunSuite with Matchers with SharedSparkSession
     val parserOptions = Map[String, String]()
     val parserConfig = ParquetSourceConfiguration(parserOptions, None)
     val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
-    val inputData = spark.source(inputConfig).read.get
+    val inputData = spark.source(inputConfig).read
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json)
 
-    implicit val converterConfig = FormatConverterConfig(inputConfig, outputConfig)
+    implicit val context = FormatConverterContext(inputConfig, outputConfig)
 
     val returnedResult = FormatConverter.run
 
     val writtenData: DataFrame = spark.read.json(testPath1)
 
-    returnedResult.get.comapreWith(inputData).areEqual(true) shouldBe true
+    returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
     writtenData.comapreWith(inputData).areEqual(true) shouldBe true
 
   }
@@ -37,16 +37,16 @@ class FormatConverterSpec extends FunSuite with Matchers with SharedSparkSession
     val parserOptions = Map[String, String]()
     val parserConfig = AvroSourceConfiguration(parserOptions, None)
     val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
-    val inputData = spark.source(inputConfig).read.get
+    val inputData = spark.source(inputConfig).read
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json)
 
-    implicit val converterConfig = FormatConverterConfig(inputConfig, outputConfig)
+    implicit val context = FormatConverterContext(inputConfig, outputConfig)
 
     val returnedResult = FormatConverter.run
 
     val writtenData: DataFrame = spark.read.json(testPath1)
 
-    returnedResult.get.comapreWith(inputData).areEqual(true) shouldBe true
+    returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
     writtenData.comapreWith(inputData).areEqual(true) shouldBe true
 
   }

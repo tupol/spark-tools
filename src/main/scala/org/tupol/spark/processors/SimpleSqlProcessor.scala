@@ -23,9 +23,7 @@ SOFTWARE.
 */
 package org.tupol.spark.processors
 
-import scala.util.{ Success, Try }
-
 /** This is the most basic implementation of hte SQL processor and it registers no custom functions */
 object SimpleSqlProcessor extends SqlProcessor {
-  override def registerSqlFunctions: Try[Unit] = Success()
+  override def registerSqlFunctions = Unit
 }

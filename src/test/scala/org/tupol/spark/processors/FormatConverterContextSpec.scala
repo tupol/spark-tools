@@ -8,7 +8,7 @@ import org.tupol.spark.io.sources.{ JdbcSourceConfiguration, TextSourceConfigura
 import org.tupol.spark.sql.loadSchemaFromFile
 import org.tupol.spark.testing.files.TestTempFilePath1
 
-class FormatConverterConfigSpec extends FunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
+class FormatConverterContextSpec extends FunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
 
   val ReferenceSchema = loadSchemaFromFile("src/test/resources/sources/avro/sample_schema.json")
 
@@ -53,9 +53,9 @@ class FormatConverterConfigSpec extends FunSuite with Matchers with SharedSparkS
       driver = Some("SOME_DRIVER"),
       optionalSaveMode = Some("SOME_MODE"),
       options = Map("opt1" -> "val1"))
-    val expected = FormatConverterConfig(expectedSource, expectedSink)
+    val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterConfig(config)
+    val result = FormatConverterContext(config)
     result.get shouldBe expected
   }
 
@@ -88,9 +88,9 @@ class FormatConverterConfigSpec extends FunSuite with Matchers with SharedSparkS
       driver = Some("SOME_DRIVER"),
       optionalSaveMode = Some("SOME_MODE"),
       options = Map("opt1" -> "val1"))
-    val expected = FormatConverterConfig(expectedSource, expectedSink)
+    val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterConfig(config)
+    val result = FormatConverterContext(config)
     result.get shouldBe expected
   }
 
@@ -128,9 +128,9 @@ class FormatConverterConfigSpec extends FunSuite with Matchers with SharedSparkS
       optionalSaveMode = Some("MODE"),
       partitionColumns = Seq("OUTPUT_PATH"),
       partitionFilesNumber = Some(2))
-    val expected = FormatConverterConfig(expectedSource, expectedSink)
+    val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterConfig(config)
+    val result = FormatConverterContext(config)
     result.get shouldBe expected
   }
 
