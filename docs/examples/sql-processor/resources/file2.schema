@@ -1,0 +1,19 @@
+{
+  "type" : "struct",
+  "fields" : [ {
+    "name" : "id",
+    "type" : "string",
+    "nullable" : true,
+    "metadata" : { }
+  }, {
+    "name" : "timestamp",
+    "type" : "string",
+    "nullable" : true,
+    "metadata" : { }
+  }, {
+    "name" : "address",
+    "type" : "string",
+    "nullable" : true,
+    "metadata" : { }
+  } ]
+}

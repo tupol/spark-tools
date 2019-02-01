@@ -59,3 +59,5 @@ Single input file using a more complex input parsing setup, with specified input
 Two input files, using a more complex input parsing setup and a join query
 - [`sample-application-4.conf`](examples/sql-processor/sample-application-4.conf)
 Two input files, using an external query
+- [`sample-application-5.conf`](examples/sql-processor/sample-application-5.conf)
+Two input files, using an external query, an external schema and variable substitution

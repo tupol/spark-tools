@@ -34,6 +34,10 @@ libraryDependencies += "org.tupol" %% "spark-tools" % "0.2.0-SNAPSHOT"
 
 ## What's new? ##
 
+**0.2.1**
+
+ - Started using `spark-utils` `0.3.1` to benefit from variable substitution
+
 **0.2.0**
 
  - Started using `spark-utils` `0.3.0` and made the necessary API changes
