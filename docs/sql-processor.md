@@ -35,6 +35,7 @@ Check [`SimpleSqlProcessor`](simple-sql-processr.md).
 - `output.partition.files`: the number of partition files that will end up in each partition folder
 
 The `SimpleSqlProcessor` uses the [`spark-utils`](https://github.com/tupol/spark-utils/) defined IO framework.
+
 For more details about defining the data sources please check the
 [`DataDource`](https://github.com/tupol/spark-utils/blob/master/docs/data-source.md) documentation.
 
@@ -44,5 +45,6 @@ For more details about defining the data sinks please check the
 
 ## Usage Examples
 
-The main usage of the `SqlProcessor` base class is to implement it, while registering custom user defined functions
-that are needed for the purpose of your project.
+The main usage of the `SqlProcessor` base class is to be implemented, while registering custom user defined functions
+that are needed for the purpose of your project. Otherwise, the [`SimpleSqlProcessor`](simple-sql-processor.md) is the
+easiest way to get a runnable SQL processor.

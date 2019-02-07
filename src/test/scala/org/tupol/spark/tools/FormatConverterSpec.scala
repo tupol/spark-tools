@@ -1,4 +1,4 @@
-package org.tupol.spark.processors
+package org.tupol.spark.tools
 
 import org.apache.spark.sql.DataFrame
 import org.scalatest.{ FunSuite, Matchers }

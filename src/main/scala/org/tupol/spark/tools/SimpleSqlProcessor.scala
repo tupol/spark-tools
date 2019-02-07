@@ -21,9 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package org.tupol.spark.processors
+package org.tupol.spark.tools
 
-/** This is the most basic implementation of hte SQL processor and it registers no custom functions */
+import org.apache.spark.sql.SparkSession
+
+/** This is the most basic implementation of the SQL processor and it registers no custom functions */
 object SimpleSqlProcessor extends SqlProcessor {
-  override def registerSqlFunctions = Unit
+
+  override def registerSqlFunctions(implicit spark: SparkSession, context: SqlProcessorContext) = Unit
 }

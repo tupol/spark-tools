@@ -1,4 +1,4 @@
-package org.tupol.spark.processors
+package org.tupol.spark.tools
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{ FunSuite, Matchers }

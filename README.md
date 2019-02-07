@@ -13,7 +13,7 @@ The main tools available:
 ## Prerequisites ##
 
 * Java 6 or higher
-* Scala 2.11,or 2.12
+* Scala 2.11 or 2.12
 * Apache Spark 2.3.X
 
 
@@ -23,16 +23,21 @@ Spark Tools is published to Sonatype OSS and Maven Central:
 
 - Group id / organization: `org.tupol`
 - Artifact id / name: `spark-tools`
-- Latest version is `0.2.0-SNAPSHOT`
+- Latest version is `0.3.0-SNAPSHOT`
 
 Usage with SBT, adding a dependency to the latest version of tools to your sbt build definition file:
 
 ```scala
-libraryDependencies += "org.tupol" %% "spark-tools" % "0.2.0-SNAPSHOT"
+libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0-SNAPSHOT"
 ```
 
 
 ## What's new? ##
+
+**0.3.0**
+
+ - Package `processors` was renamed to `tools`
+ - `SqlProcessor.registerSqlFunctions` takes now implicit parameters: spark session and application context
 
 **0.2.1**
 

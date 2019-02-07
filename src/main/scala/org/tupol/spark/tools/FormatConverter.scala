@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package org.tupol.spark.processors
+package org.tupol.spark.tools
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.{ DataFrame, SparkSession }
@@ -44,11 +44,11 @@ import org.tupol.utils.config.Configurator
  *      [[https://github.com/databricks/spark-avro]]</li>
  * </ul>
  */
-object FormatConverter extends SparkApp[FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration], DataFrame] {
+object FormatConverter extends SparkApp[FormatConverterContext, DataFrame] {
 
-  override def createContext(config: Config): FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration] = FormatConverterContext(config).get
+  override def createContext(config: Config): FormatConverterContext = FormatConverterContext(config).get
 
-  override def run(implicit spark: SparkSession, context: FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]): DataFrame = {
+  override def run(implicit spark: SparkSession, context: FormatConverterContext): DataFrame = {
     val inputData = spark.source(context.input).read
     val writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
     writeableData.sink(context.output).write
@@ -62,14 +62,14 @@ object FormatConverter extends SparkApp[FormatConverterContext[_ <: FormatAwareD
  * @param input data source
  * @param output data sink
  */
-case class FormatConverterContext[SourceConfig <: FormatAwareDataSourceConfiguration, SinkConfig <: FormatAwareDataSinkConfiguration](val input: SourceConfig, val output: SinkConfig)
+case class FormatConverterContext(val input: FormatAwareDataSourceConfiguration, val output: FormatAwareDataSinkConfiguration)
 
-object FormatConverterContext extends Configurator[FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] {
+object FormatConverterContext extends Configurator[FormatConverterContext] {
 
   import com.typesafe.config.Config
   import scalaz.ValidationNel
 
-  def validationNel(config: Config): ValidationNel[Throwable, FormatConverterContext[_ <: FormatAwareDataSourceConfiguration, _ <: FormatAwareDataSinkConfiguration]] = {
+  def validationNel(config: Config): ValidationNel[Throwable, FormatConverterContext] = {
     import org.tupol.utils.config._
     import scalaz.syntax.applicative._
 

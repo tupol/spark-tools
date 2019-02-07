@@ -117,7 +117,7 @@ lazy val root = (project in file(".")).
   enablePlugins(BuildInfoPlugin).
   settings(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage := "org.tupol.spark.processors.info"
+    buildInfoPackage := "org.tupol.spark.tools.info"
   )
 
 buildInfoKeys ++= Seq[BuildInfoKey](

@@ -168,7 +168,7 @@ the `cluster-mode`.
 ```
 spark-submit  -v  \
 ...
---class org.tupol.spark.processors.FormatConverter \
+--class org.tupol.spark.tools.FormatConverter \
 --name SimpleSqlProcessor \
 --files $APPLICATION_CONF \
 --jars "$JARS" \

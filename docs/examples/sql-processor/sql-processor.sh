@@ -36,7 +36,7 @@ mkdir -p $LIBS_DIR
 cd $LIBS_DIR
 
 SPARK_TOOLS_ARTIFACT="spark-tools_2.11"
-SPARK_TOOLS_VERSION="0.2.1-SNAPSHOT"
+SPARK_TOOLS_VERSION="0.3.0-SNAPSHOT"
 SPARK_TOOLS_JAR="$SPARK_TOOLS_ARTIFACT-$SPARK_TOOLS_VERSION.jar"
 
 SPARK_UTILS_ARTIFACT="spark-utils_2.11"
@@ -96,7 +96,7 @@ JARS="$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$SCALAZ_JAR,$LIBS_DIR/$SCALA_UTIL
 spark-submit  -v  \
 --master local[*] \
 --deploy-mode client \
---class org.tupol.spark.processors.SimpleSqlProcessor \
+--class org.tupol.spark.tools.SimpleSqlProcessor \
 --name SqlProcessor \
 --conf spark.yarn.submit.waitAppCompletion=true \
 --queue default \

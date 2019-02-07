@@ -36,7 +36,7 @@ the `cluster-mode`.
 ```
 spark-submit  -v  \
 ...
---class org.tupol.spark.processors.SimpleSqlProcessor \
+--class org.tupol.spark.tools.SimpleSqlProcessor \
 --name SimpleSqlProcessor \
 --files $APPLICATION_CONF \
 --jars "$JARS" \
