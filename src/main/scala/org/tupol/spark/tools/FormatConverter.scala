@@ -62,7 +62,7 @@ object FormatConverter extends SparkApp[FormatConverterContext, DataFrame] {
  * @param input data source
  * @param output data sink
  */
-case class FormatConverterContext(val input: FormatAwareDataSourceConfiguration, val output: FormatAwareDataSinkConfiguration)
+case class FormatConverterContext(input: FormatAwareDataSourceConfiguration, output: FormatAwareDataSinkConfiguration)
 
 object FormatConverterContext extends Configurator[FormatConverterContext] {
 

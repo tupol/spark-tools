@@ -19,7 +19,8 @@ The main tools available:
 
 ## Getting Spark Tools ##
 
-Spark Tools is published to Sonatype OSS and Maven Central:
+Spark Tools is published to Sonatype OSS and [Maven Central](https://mvnrepository.com/artifact/org.tupol/spark-tools),
+where the latest artifacts can be found.
 
 - Group id / organization: `org.tupol`
 - Artifact id / name: `spark-tools`
@@ -31,10 +32,9 @@ Usage with SBT, adding a dependency to the latest version of tools to your sbt b
 libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0-SNAPSHOT"
 ```
 
-
 ## What's new? ##
 
-**0.3.0**
+**0.3.0-SNAPSHOT**
 
  - Package `processors` was renamed to `tools`
  - `SqlProcessor.registerSqlFunctions` takes now implicit parameters: spark session and application context

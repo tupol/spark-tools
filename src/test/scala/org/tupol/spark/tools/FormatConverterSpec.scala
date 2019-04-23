@@ -28,7 +28,6 @@ class FormatConverterSpec extends FunSuite with Matchers with SharedSparkSession
 
     returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
     writtenData.comapreWith(inputData).areEqual(true) shouldBe true
-
   }
 
   test("FormatConverter basic run test from avro to json") {
@@ -48,7 +47,6 @@ class FormatConverterSpec extends FunSuite with Matchers with SharedSparkSession
 
     returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
     writtenData.comapreWith(inputData).areEqual(true) shouldBe true
-
   }
 
 }
