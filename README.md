@@ -1,5 +1,11 @@
 # Spark Tools #
 
+[![Maven Central](https://img.shields.io/maven-central/v/org.tupol/spark-tools_2.11.svg)](https://mvnrepository.com/artifact/org.tupol/spark-tools) &nbsp;
+[![GitHub](https://img.shields.io/github/license/tupol/spark-tools.svg)](https://github.com/tupol/spark-tools/blob/master/LICENSE) &nbsp; 
+[![Travis (.org)](https://img.shields.io/travis/tupol/spark-tools.svg)](https://travis-ci.com/tupol/spark-tools) &nbsp; 
+[![Codecov](https://img.shields.io/codecov/c/github/tupol/spark-tools.svg)](https://codecov.io/gh/tupol/spark-tools) &nbsp;
+[![Gitter](https://badges.gitter.im/spark-tools/community.svg)](https://gitter.im/spark-tools/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) &nbsp; 
+
 
 ## Description ##
 This project contains some basic runnable tools that can help with various tasks around a Spark based project.
