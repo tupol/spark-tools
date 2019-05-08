@@ -14,6 +14,43 @@ Full support for the parsing of various input files is provided.
 For more details check the [Input Formats](#input-formats) section.
 
 
+## Usage Examples
+
+In the [`examples`](examples/format-converter) folder there are multiple examples on how the format converter can be used in
+real life applications.
+
+The [`convert-format.sh`](examples/format-converter/convert-format.sh) is an example on how the actual application can be used.
+Taking out the preparation part, it comes down to the following lines, which can be used in different setups, including
+the `cluster-mode`.
+
+```
+spark-submit  -v  \
+...
+--class org.tupol.spark.tools.FormatConverter \
+--name FormatConverter \
+--files $APPLICATION_CONF \
+--jars "$JARS" \
+$SPARK_TOOLS_JAR
+```
+
+Notice the following variables:
+- `$APPLICATION_CONF` needs to point to a file actually called `application.conf`, somewhere int the local file system.
+- `$JARS` needs to contains the comma separated list of dependency jars; as of now this list contains the following jars:
+`config-1.3.0.jar`, `scalaz-core_2.11-7.2.26.jar`, `scala-utils_2.11-0.2.0.jar`, `spark-utils_2.11-0.4.0.jar`
+- `$SPARK_TOOLS_JAR` needs to contain the local path to the actual `spark-tools` jar; as of now this is `spark-tools_2.11-0.4.0.jar`
+
+**Configuration Examples Description**
+
+- [`sample-application-1.conf`](examples/format-converter/sample-application-1.conf)
+Simple Json to CSV conversion with partitioning columns
+- [`sample-application-2.conf`](examples/format-converter/sample-application-2.conf)
+Csv parse with input schema specified to Json conversion
+- [`sample-application-3.conf`](examples/format-converter/sample-application-3.conf)
+Csv parse with schema inference to Json conversion
+
+Check the [README](examples/format-converter/README.md) for more details on how to run
+these examples.
+
 ## Format Converter Parameters
 
 ### Common Parameters
@@ -154,41 +191,6 @@ For more details about defining the data sinks please check the
       - `PERMISSIVE` : sets other fields to null when it meets a corrupted record, and puts the malformed string into a new field configured by `columnNameOfCorruptRecord`. When a schema is set by user, it sets null for extra fields.
       - `DROPMALFORMED` : ignores the whole corrupted records.
       - `FAILFAST` : throws an exception when it meets corrupted records.
-
-
-## Usage Examples
-
-In the [`examples`](examples/format-converter) folder there are multiple examples on how the format converter can be used in
-real life applications.
-
-The [`convert-format.sh`](examples/format-converter/convert-format.sh) is an example on how the actual application can be used.
-Taking out the preparation part, it comes down to the following lines, which can be used in different setups, including
-the `cluster-mode`.
-
-```
-spark-submit  -v  \
-...
---class org.tupol.spark.tools.FormatConverter \
---name SimpleSqlProcessor \
---files $APPLICATION_CONF \
---jars "$JARS" \
-$SPARK_TOOLS_JAR
-```
-
-Notice the following variables:
-- `$APPLICATION_CONF` needs to point to a file actually called `application.conf`, somewhere int the local file system.
-- `$JARS` needs to contains the comma separated list of dependency jars; as of now this list contains the following jars:
-`config-1.3.0.jar`, `scalaz-core_2.11-7.2.26.jar`, `scala-utils_2.11-0.2.0-SNAPSHOT.jar`, `spark-utils_2.11-0.2.0-SNAPSHOT.jar`
-- `$SPARK_TOOLS_JAR` needs to contain the local path to the actual `spark-tools` jar; as of not this is `spark-tools_2.11-0.1.0-SNAPSHOT.jar`
-
-**Configuration Examples Description**
-
-- [`sample-application-1.conf`](examples/format-converter/sample-application-1.conf)
-Simple Json to CSV conversion with partitioning columns
-- [`sample-application-2.conf`](examples/format-converter/sample-application-2.conf)
-Csv parse with input schema specified to Json conversion
-- [`sample-application-3.conf`](examples/format-converter/sample-application-3.conf)
-Csv parse with schema inference to Json conversion
 
 
 ## References

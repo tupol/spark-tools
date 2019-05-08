@@ -26,7 +26,7 @@ package org.tupol.spark.tools
 import com.typesafe.config.Config
 import org.apache.spark.sql.{ DataFrame, SparkSession }
 import org.tupol.spark.implicits._
-import org.tupol.spark.io.{ FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration }
+import org.tupol.spark.io.streaming.structured.{ FileStreamDataSinkConfiguration, FileStreamDataSourceConfiguration }
 import org.tupol.spark.utils._
 import org.tupol.spark.{ Logging, SparkApp }
 import org.tupol.utils._
@@ -35,17 +35,17 @@ import org.tupol.utils.config.Configurator
 import scala.util.Try
 
 /**
- * The SqlProcessor is a base class that can support multiple implementation, mainly designed to support registering
+ * The StreamingSqlProcessor is a base class that can support multiple implementation, mainly designed to support registering
  * custom SQL functions (UDFs) to make them available while running the queries.
  */
-abstract class SqlProcessor extends SparkApp[SqlProcessorContext, DataFrame] {
+abstract class FileStreamingSqlProcessor extends SparkApp[FileStreamingSqlProcessorContext, DataFrame] {
 
-  def registerSqlFunctions(implicit spark: SparkSession, context: SqlProcessorContext): Unit
+  def registerSqlFunctions(implicit spark: SparkSession, context: FileStreamingSqlProcessorContext): Unit
 
-  override def createContext(config: Config): SqlProcessorContext =
-    SqlProcessorContext(config).get
+  override def createContext(config: Config): FileStreamingSqlProcessorContext =
+    FileStreamingSqlProcessorContext(config).get
 
-  override def run(implicit spark: SparkSession, context: SqlProcessorContext): DataFrame =
+  override def run(implicit spark: SparkSession, context: FileStreamingSqlProcessorContext): DataFrame =
     {
       Try(registerSqlFunctions)
         .logSuccess(_ => logInfo(s"Successfully registered the custom SQL functions."))
@@ -58,26 +58,27 @@ abstract class SqlProcessor extends SparkApp[SqlProcessorContext, DataFrame] {
         .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}."))
         .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}.", _))
         .get
-      sqlResult.sink(context.outputConfig).write
+      sqlResult.streamingSink(context.outputConfig).write.awaitTermination()
+      sqlResult
     }
 
 }
 
-case class SqlProcessorContext(
-  inputTables:    Map[String, FormatAwareDataSourceConfiguration],
+case class FileStreamingSqlProcessorContext(
+  inputTables:    Map[String, FileStreamDataSourceConfiguration],
   inputVariables: Map[String, String],
-  outputConfig:   FormatAwareDataSinkConfiguration, sql: String
+  outputConfig:   FileStreamDataSinkConfiguration, sql: String
 ) {
   def renderedSql: String = replaceVariables(sql, inputVariables)
 }
 
-object SqlProcessorContext extends Configurator[SqlProcessorContext] with Logging {
+object FileStreamingSqlProcessorContext extends Configurator[FileStreamingSqlProcessorContext] with Logging {
 
   import com.typesafe.config.Config
   import org.tupol.utils.config._
   import scalaz.ValidationNel
 
-  def validationNel(config: Config): ValidationNel[Throwable, SqlProcessorContext] = {
+  def validationNel(config: Config): ValidationNel[Throwable, FileStreamingSqlProcessorContext] = {
     import scalaz.syntax.applicative._
 
     val sql = config.extract[String]("input.sql.path").map { path =>
@@ -87,11 +88,11 @@ object SqlProcessorContext extends Configurator[SqlProcessorContext] with Loggin
       }
     }.orElse(config.extract[String]("input.sql.line"))
 
-    config.extract[Map[String, FormatAwareDataSourceConfiguration]]("input.tables") |@|
+    config.extract[Map[String, FileStreamDataSourceConfiguration]]("input.tables") |@|
       config.extract[Option[Map[String, String]]]("input.variables").map(_.getOrElse(Map())) |@|
-      config.extract[FormatAwareDataSinkConfiguration]("output") |@|
+      config.extract[FileStreamDataSinkConfiguration]("output") |@|
       sql apply
-      SqlProcessorContext.apply
+      FileStreamingSqlProcessorContext.apply
   }
 
 }

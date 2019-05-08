@@ -2,7 +2,7 @@
 
 echo "###############################################################################"
 echo "##                                                                           ##"
-echo "## Format Converter Script                                                   ##"
+echo "## SQL Processor Script                                                      ##"
 echo "##                                                                           ##"
 echo "###############################################################################"
 
@@ -23,7 +23,7 @@ fi
 
 APPLICATION_CONF_DIR="tmp"
 APPLICATION_CONF="$APPLICATION_CONF_DIR/application.conf"
-rm -rf $APPLICATION_CONF_DIR
+rm -rf $APPLICATION_CONF
 mkdir $APPLICATION_CONF_DIR
 cp -f $USER_APPLICATION_CONF $APPLICATION_CONF
 
@@ -96,11 +96,12 @@ JARS="$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$SCALAZ_JAR,$LIBS_DIR/$SCALA_UTIL
 spark-submit  -v  \
 --master local[*] \
 --deploy-mode client \
---class org.tupol.spark.tools.FormatConverter \
---name SqlProcessor \
+--class org.tupol.spark.tools.SimpleFileStreamingSqlProcessor \
+--name StreamingSqlProcessor \
 --conf spark.yarn.submit.waitAppCompletion=true \
 --queue default \
 --files "$APPLICATION_CONF" \
 --jars "$JARS" \
-$LIBS_DIR/$SPARK_TOOLS_JAR
+$LIBS_DIR/$SPARK_TOOLS_JAR \
+my-filter-id="1001"
 

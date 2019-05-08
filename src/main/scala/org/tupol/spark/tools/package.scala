@@ -21,12 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package org.tupol.spark.tools
+package org.tupol.spark
 
-import org.apache.spark.sql.SparkSession
+package object tools {
 
-/** This is the most basic implementation of the SQL processor and it registers no custom functions */
-object SimpleSqlProcessor extends SqlProcessor {
-  // This is a simple processor, so no custom functions are registered
-  override def registerSqlFunctions(implicit spark: SparkSession, context: SqlProcessorContext) = Unit
+  /**
+   * Replace variables marked by `{{}}` inside the given `text` from the map holding variable names as keys and
+   * the values to be replaced as values.
+   * @param text
+   * @param variables
+   * @return
+   */
+  def replaceVariables(text: String, variables: Map[String, String]): String = {
+    def renderVariableName(name: String) = s"\\{\\{${name.trim}\\}\\}"
+    variables.foldLeft(text) { case (newText, (k, v)) => newText.replaceAll(renderVariableName(k), v) }
+  }
+
 }

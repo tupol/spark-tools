@@ -4,16 +4,21 @@
 [![GitHub](https://img.shields.io/github/license/tupol/spark-tools.svg)](https://github.com/tupol/spark-tools/blob/master/LICENSE) &nbsp; 
 [![Travis (.org)](https://img.shields.io/travis/tupol/spark-tools.svg)](https://travis-ci.com/tupol/spark-tools) &nbsp; 
 [![Codecov](https://img.shields.io/codecov/c/github/tupol/spark-tools.svg)](https://codecov.io/gh/tupol/spark-tools) &nbsp;
+[![Javadocs](https://www.javadoc.io/badge/org.tupol/spark-tools_2.11.svg)](https://www.javadoc.io/doc/org.tupol/spark-tools_2.11) &nbsp;
 [![Gitter](https://badges.gitter.im/spark-tools/community.svg)](https://gitter.im/spark-tools/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) &nbsp; 
-
+[![Twitter](https://img.shields.io/twitter/url/https/_tupol.svg?color=%2317A2F2)](https://twitter.com/_tupol) &nbsp; 
 
 ## Description ##
 This project contains some basic runnable tools that can help with various tasks around a Spark based project.
 
 The main tools available:
-- [FormatConverter](docs/format-converter.md) Converts any acceptable file format into a different file format,
-    providing also partitioning support.
-- [SimpleSqlProcessor](docs/sql-processor.md) Applies a given SQL to the input files which are being mapped into tables.
+- [FormatConverter](docs/format-converter.md) Converts any acceptable file format into a different
+  file format, providing also partitioning support.
+- [SimpleSqlProcessor](docs/sql-processor.md) Applies a given SQL to the input files which are 
+  being mapped into tables.
+- [StreamingFormatConverter](docs/streaming-format-converter.md) Converts any acceptable data 
+  stream format into a different data stream format, providing also partitioning support.
+- [SimpleFileStreamingSqlProcessor](docs/file-streaming-sql-processor.md) Applies a given SQL to the input files stream which are being mapped into tables.
 
 
 ## Prerequisites ##
@@ -40,24 +45,32 @@ libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0"
 
 ## What's new? ##
 
+**0.4.0**
+
+- Added `StreamingFormatConverter`
+- Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
+
 **0.3.0**
 
- - Package `processors` was renamed to `tools`
- - `SqlProcessor.registerSqlFunctions` takes now implicit parameters: spark session and application context
+- Package `processors` was renamed to `tools`
+- `SqlProcessor.registerSqlFunctions` takes now implicit parameters: spark session and 
+  application context
+- Added `StreamingFormatConverter`
+- Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
 
 **0.2.1**
 
- - Started using `spark-utils` `0.3.1` to benefit from variable substitution
+- Started using `spark-utils` `0.3.1` to benefit from variable substitution
 
 **0.2.0**
 
- - Started using `spark-utils` `0.3.0` and made the necessary API changes
+- Started using `spark-utils` `0.3.0` and made the necessary API changes
 
 **0.1.0**
 
- - Added `FormatConverter`
- - Added `SqlProcessor` base class
- - Added `SimpleSqlProcessor` implementation
+- Added `FormatConverter`
+- Added `SqlProcessor` base class
+- Added `SimpleSqlProcessor` implementation
 
 
 ## License ##
