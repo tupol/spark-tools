@@ -30,17 +30,17 @@ where the latest artifacts can be found.
 
 - Group id / organization: `org.tupol`
 - Artifact id / name: `spark-tools`
-- Latest version is `0.3.0-SNAPSHOT`
+- Latest version is `0.3.0`
 
 Usage with SBT, adding a dependency to the latest version of tools to your sbt build definition file:
 
 ```scala
-libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0-SNAPSHOT"
+libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0"
 ```
 
 ## What's new? ##
 
-**0.3.0-SNAPSHOT**
+**0.3.0**
 
  - Package `processors` was renamed to `tools`
  - `SqlProcessor.registerSqlFunctions` takes now implicit parameters: spark session and application context
