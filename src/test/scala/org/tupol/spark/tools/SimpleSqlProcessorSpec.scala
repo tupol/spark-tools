@@ -18,7 +18,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
   test("Select * from a single file") {
     val filePath1 = new File("src/test/resources/SqlProcessor/file1.json").getAbsolutePath
     val inputTables = Map(
-      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()))
+      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
+    )
     val sql = "SELECT * FROM table1"
 
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
@@ -34,7 +35,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
   test("Select with variable substitution from a single file") {
     val filePath1 = new File("src/test/resources/SqlProcessor/file1.json").getAbsolutePath
     val inputTables = Map(
-      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()))
+      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
+    )
     val sql = "SELECT {{columns}} FROM {{table-name}}"
     val variables = Map("columns" -> "*", "table-name" -> "table1")
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
@@ -50,7 +52,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
   test("Select * from a single file with output partitions") {
     val filePath1 = new File("src/test/resources/SqlProcessor/file1.json").getAbsolutePath
     val inputTables = Map(
-      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()))
+      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
+    )
     val sql = "SELECT * FROM table1"
 
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]("id"))
@@ -68,7 +71,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val filePath2 = new File("src/test/resources/SqlProcessor/file2.json").getAbsolutePath
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()),
-      "table2" -> FileSourceConfiguration(filePath2, JsonSourceConfiguration()))
+      "table2" -> FileSourceConfiguration(filePath2, JsonSourceConfiguration())
+    )
     val sql = "SELECT table1.* FROM table1 INNER JOIN table2 on table1.id == table2.id"
 
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
@@ -86,7 +90,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val filePath2 = new File("src/test/resources/SqlProcessor/file2.json").getAbsolutePath
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()),
-      "table2" -> FileSourceConfiguration(filePath2, JsonSourceConfiguration()))
+      "table2" -> FileSourceConfiguration(filePath2, JsonSourceConfiguration())
+    )
     val sql = "SELECT table2.* FROM table1 INNER JOIN table2 on table1.id == table2.id"
 
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
@@ -101,7 +106,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
   test("Select with wrong table name yields an exception") {
     val filePath1 = new File("src/test/resources/SqlProcessor/file1.json").getAbsolutePath
     val inputTables = Map(
-      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()))
+      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
+    )
     val sql = "SELECT * FROM UNKNOWN_TABLE"
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
@@ -117,7 +123,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
   test("SimpleSqlProcessor.run fails if the input files can not be found") {
     val filePath1 = new File("/path/that/does/not/exist/nor/it/should/exist/no_name.unknown_extension").getAbsolutePath
     val inputTables = Map(
-      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()))
+      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
+    )
     val sql = "SELECT * FROM table1"
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
@@ -127,7 +134,8 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
   test("SimpleSqlProcessor.run fails if it is not possible to write to the output file") {
     val filePath1 = new File("src/test/resources/SqlProcessor/file1.json").getAbsolutePath
     val inputTables = Map(
-      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()))
+      "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
+    )
     val sql = "SELECT * FROM table1"
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)

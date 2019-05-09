@@ -23,7 +23,7 @@ fi
 
 APPLICATION_CONF_DIR="tmp"
 APPLICATION_CONF="$APPLICATION_CONF_DIR/application.conf"
-rm -rf $APPLICATION_CONF_DIR
+rm -rf $APPLICATION_CONF
 mkdir $APPLICATION_CONF_DIR
 cp -f $USER_APPLICATION_CONF $APPLICATION_CONF
 
@@ -84,9 +84,25 @@ if [ ! -f $SCALAZ_JAR ]; then
   wget "$URL"
 fi
 
+SPARK_SQL_KAFKA_JAR="spark-sql-kafka-0-10_2.11-2.3.2.jar"
+if [ ! -f $SPARK_SQL_KAFKA_JAR ]; then
+  URL="http://central.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.11/2.3.2/$SPARK_SQL_KAFKA_JAR"
+  echo "$SPARK_SQL_KAFKA_JAR was not found locally; bringing a version from $URL"
+  wget "$URL"
+fi
+
+KAFKA_CLIENTS_JAR="kafka-clients-0.10.0.1.jar"
+if [ ! -f $KAFKA_CLIENTS_JAR ]; then
+  URL="http://central.maven.org/maven2/org/apache/kafka/kafka-clients/0.10.0.1/$KAFKA_CLIENTS_JAR"
+  echo "$KAFKA_CLIENTS_JAR was not found locally; bringing a version from $URL"
+  wget "$URL"
+fi
+
+
 cd ../
 
 JARS="$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$SCALAZ_JAR,$LIBS_DIR/$SCALA_UTILS_JAR,$LIBS_DIR/$SPARK_UTILS_JAR"
+JARS="$JARS,$LIBS_DIR/$SPARK_SQL_KAFKA_JAR,$LIBS_DIR/$KAFKA_CLIENTS_JAR"
 
 
 ###############################################################################
@@ -96,7 +112,7 @@ JARS="$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$SCALAZ_JAR,$LIBS_DIR/$SCALA_UTIL
 spark-submit  -v  \
 --master local[*] \
 --deploy-mode client \
---class org.tupol.spark.tools.FormatConverter \
+--class org.tupol.spark.tools.StreamingFormatConverter \
 --name SqlProcessor \
 --conf spark.yarn.submit.waitAppCompletion=true \
 --queue default \

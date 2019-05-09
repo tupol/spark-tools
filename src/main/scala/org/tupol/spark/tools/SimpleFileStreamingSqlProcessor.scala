@@ -26,7 +26,7 @@ package org.tupol.spark.tools
 import org.apache.spark.sql.SparkSession
 
 /** This is the most basic implementation of the SQL processor and it registers no custom functions */
-object SimpleSqlProcessor extends SqlProcessor {
+object SimpleFileStreamingSqlProcessor extends FileStreamingSqlProcessor {
   // This is a simple processor, so no custom functions are registered
-  override def registerSqlFunctions(implicit spark: SparkSession, context: SqlProcessorContext) = Unit
+  override def registerSqlFunctions(implicit spark: SparkSession, context: FileStreamingSqlProcessorContext) = Unit
 }

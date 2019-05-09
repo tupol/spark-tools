@@ -44,7 +44,8 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
       password = Some("USER_PASS"),
       driver = Some("SOME_DRIVER"),
       options = Map("opt1" -> "val1"),
-      schema = Some(ReferenceSchema))
+      schema = Some(ReferenceSchema)
+    )
     val expectedSink = JdbcSinkConfiguration(
       url = "OUTPUT_URL",
       table = "SOURCE_TABLE",
@@ -52,7 +53,8 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
       password = Some("USER_PASS"),
       driver = Some("SOME_DRIVER"),
       optionalSaveMode = Some("SOME_MODE"),
-      options = Map("opt1" -> "val1"))
+      options = Map("opt1" -> "val1")
+    )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
     val result = FormatConverterContext(config)
@@ -79,7 +81,8 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
 
     val expectedSource = FileSourceConfiguration(
       path = "INPUT_PATH",
-      sourceConfiguration = TextSourceConfiguration())
+      sourceConfiguration = TextSourceConfiguration()
+    )
     val expectedSink = JdbcSinkConfiguration(
       url = "OUTPUT_URL",
       table = "SOURCE_TABLE",
@@ -87,7 +90,8 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
       password = Some("USER_PASS"),
       driver = Some("SOME_DRIVER"),
       optionalSaveMode = Some("SOME_MODE"),
-      options = Map("opt1" -> "val1"))
+      options = Map("opt1" -> "val1")
+    )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
     val result = FormatConverterContext(config)
@@ -121,13 +125,15 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
       password = Some("USER_PASS"),
       driver = Some("SOME_DRIVER"),
       options = Map("opt1" -> "val1"),
-      schema = Some(ReferenceSchema))
+      schema = Some(ReferenceSchema)
+    )
     val expectedSink = FileSinkConfiguration(
       path = "OUTPUT_PATH",
       format = FormatType.Text,
       optionalSaveMode = Some("MODE"),
       partitionColumns = Seq("OUTPUT_PATH"),
-      partitionFilesNumber = Some(2))
+      partitionFilesNumber = Some(2)
+    )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
     val result = FormatConverterContext(config)

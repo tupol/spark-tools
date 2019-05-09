@@ -1,26 +1,26 @@
-# SimpleSqlProcessor
+# SimpleFileStreamingSqlProcessor
 
 
 ## Description
 
-The `SimpleSqlProcessor` is a basic concrete implementation of the [`SqlProcessor`](sql-processor.md) base class, which implements no
-custom user defined functions.
+The `SimpleFileStreamingSqlProcessor` is a basic concrete implementation of the 
+`FileStreamingSqlProcessor` base class, which implements no custom user defined functions.
 
 
 ## Usage Examples
 
-In the [`examples`](examples/sql-processor) folder there are multiple examples on how the SQL processor can be used in
+In the [`examples`](examples/file-streaming-sql-processor) folder there are multiple examples on how the SQL processor can be used in
 real life applications.
 
-The [`sql-processor.sh`](examples/sql-processor/sql-processor.sh) is an example on how the actual application can be used.
+The [`file-streaming-sql-processor.sh`](examples/file-streaming-sql-processor/file-streaming-sql-processor.sh) is an example on how the actual application can be used.
 Taking out the preparation part, it comes down to the following lines, which can be used in different setups, including
 the `cluster-mode`.
 
 ```
 spark-submit  -v  \
 ...
---class org.tupol.spark.tools.SimpleSqlProcessor \
---name SimpleSqlProcessor \
+--class org.tupol.spark.tools.SimpleFileStreamingSqlProcessor \
+--name SimpleFileStreamingSqlProcessor \
 --files $APPLICATION_CONF \
 --jars "$JARS" \
 $SPARK_TOOLS_JAR
@@ -34,23 +34,22 @@ Notice the following variables:
 
 **Configuration Examples Descriptions**
 
-- [`sample-application-1.conf`](examples/sql-processor/sample-application-1.conf)
+- [`sample-application-1.conf`](examples/file-streaming-sql-processor/sample-application-1.conf)
 Single input file, using an inline SQL and variables
-- [`sample-application-2.conf`](examples/sql-processor/sample-application-2.conf)
+- [`sample-application-2.conf`](examples/file-streaming-sql-processor/sample-application-2.conf)
 Single input file using a more complex input parsing setup, with specified input schema
-- [`sample-application-3.conf`](examples/sql-processor/sample-application-3.conf)
+- [`sample-application-3.conf`](examples/file-streaming-sql-processor/sample-application-3.conf)
 Two input files, using a more complex input parsing setup and a join query
-- [`sample-application-4.conf`](examples/sql-processor/sample-application-4.conf)
-Two input files, using an external query
-- [`sample-application-5.conf`](examples/sql-processor/sample-application-5.conf)
+- [`sample-application-4.conf`](examples/file-streaming-sql-processor/sample-application-4.conf)
 Two input files, using an external query, an external schema and variable substitution
 
-Check the [README](examples/sql-processor/README.md) for more details on how to run
+Check the [README](examples/file-streaming-sql-processor/README.md) for more details on how to run
 these examples.
+
 
 ## Application Parameters
 
-See [`SqlProcessor`](sql-processor.md#configuration-parameters) for a detailed parameters description.
+See [`SqlProcessor`](file-streaming-sql-processor.md#configuration-parameters) for a detailed parameters description.
 
 All application parameters need to be prefixed by `SimpleSqlProcessor`.
 For example:
