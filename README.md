@@ -18,7 +18,7 @@ The main tools available:
   being mapped into tables.
 - [StreamingFormatConverter](docs/streaming-format-converter.md) Converts any acceptable data 
   stream format into a different data stream format, providing also partitioning support.
-- [SimpleFileStreamingSqlProcessor](docs/file-streaming-sql-processor.md) Applies a given SQL to the input files stream which are being mapped into tables.
+- [SimpleFileStreamingSqlProcessor](docs/file-streaming-sql-processor.md) Applies a given SQL to the input files streams which are being mapped into file output streams.
 
 
 ## Prerequisites ##
@@ -45,7 +45,7 @@ libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0"
 
 ## What's new? ##
 
-**0.4.0**
+**0.4.0-SNAPSHOT**
 
 - Added `StreamingFormatConverter`
 - Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
