@@ -4,8 +4,8 @@ import org.apache.spark.sql.DataFrame
 import org.scalatest.{ FunSuite, Matchers }
 import org.tupol.spark.SharedSparkSession
 import org.tupol.spark.implicits._
-import org.tupol.spark.io.sources.{ AvroSourceConfiguration, ParquetSourceConfiguration }
-import org.tupol.spark.io.{ FileSourceConfiguration, FileSinkConfiguration, FormatType }
+import org.tupol.spark.io.sources.{ AvroSourceConfiguration, GenericSourceConfiguration, ParquetSourceConfiguration }
+import org.tupol.spark.io.{ FileSinkConfiguration, FileSourceConfiguration, FormatType, GenericSinkConfiguration }
 import org.tupol.spark.testing._
 import org.tupol.spark.testing.files.TestTempFilePath1
 
@@ -30,7 +30,7 @@ class FormatConverterSpec extends FunSuite with Matchers with SharedSparkSession
     writtenData.comapreWith(inputData).areEqual(true) shouldBe true
   }
 
-  test("FormatConverter basic run test from avro to json") {
+  test("FormatConverter basic run test from databricks avro to json") {
 
     val inputPath = "src/test/resources/sources/avro/sample.avro"
     val parserOptions = Map[String, String]()
@@ -44,6 +44,90 @@ class FormatConverterSpec extends FunSuite with Matchers with SharedSparkSession
     val returnedResult = FormatConverter.run
 
     val writtenData: DataFrame = spark.read.json(testPath1)
+
+    returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
+    writtenData.comapreWith(inputData).areEqual(true) shouldBe true
+  }
+
+  test("FormatConverter basic run test from spark avro to json") {
+
+    val inputPath = "src/test/resources/sources/avro/sample.avro"
+    val options = Map[String, String]("path" -> inputPath)
+    val inputConfig = GenericSourceConfiguration(FormatType.Custom("avro"), options)
+
+    val inputData = spark.source(inputConfig).read
+    val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json)
+
+    implicit val context = FormatConverterContext(inputConfig, outputConfig)
+
+    val returnedResult = FormatConverter.run
+
+    val writtenData: DataFrame = spark.read.json(testPath1)
+
+    returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
+    writtenData.comapreWith(inputData).areEqual(true) shouldBe true
+  }
+
+  test("FormatConverter basic run test from parquet to databricks avro") {
+
+    val inputPath = "src/test/resources/sources/parquet/sample.parquet"
+    val parserOptions = Map[String, String]()
+    val parserConfig = ParquetSourceConfiguration(parserOptions, None)
+    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData = spark.source(inputConfig).read
+    val writerOptions = Map[String, String]("path" -> testPath1)
+    val outputConfig = GenericSinkConfiguration(
+      FormatType.Custom("avro"),
+      None, Seq(), None, writerOptions
+    )
+
+    implicit val context = FormatConverterContext(inputConfig, outputConfig)
+
+    val returnedResult = FormatConverter.run
+
+    val writtenData: DataFrame = spark.read.format("avro").load(testPath1)
+
+    returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
+    writtenData.comapreWith(inputData).areEqual(true) shouldBe true
+  }
+
+  test("FormatConverter basic run test from parquet to spark avro") {
+
+    val inputPath = "src/test/resources/sources/parquet/sample.parquet"
+    val parserOptions = Map[String, String]()
+    val parserConfig = ParquetSourceConfiguration(parserOptions, None)
+    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData = spark.source(inputConfig).read
+    val outputConfig = FileSinkConfiguration(testPath1, FormatType.Avro)
+
+    implicit val context = FormatConverterContext(inputConfig, outputConfig)
+
+    val returnedResult = FormatConverter.run
+
+    val writtenData: DataFrame = spark.read.format("avro").load(testPath1)
+
+    returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
+    writtenData.comapreWith(inputData).areEqual(true) shouldBe true
+  }
+
+  test("FormatConverter basic run test from parquet to delta") {
+
+    val inputPath = "src/test/resources/sources/parquet/sample.parquet"
+    val parserOptions = Map[String, String]()
+    val parserConfig = ParquetSourceConfiguration(parserOptions, None)
+    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData = spark.source(inputConfig).read
+    val writerOptions = Map[String, String]("path" -> testPath1)
+    val outputConfig = GenericSinkConfiguration(
+      FormatType.Custom("delta"),
+      None, Seq(), None, writerOptions
+    )
+
+    implicit val context = FormatConverterContext(inputConfig, outputConfig)
+
+    val returnedResult = FormatConverter.run
+
+    val writtenData: DataFrame = spark.read.format("delta").load(testPath1)
 
     returnedResult.comapreWith(inputData).areEqual(true) shouldBe true
     writtenData.comapreWith(inputData).areEqual(true) shouldBe true

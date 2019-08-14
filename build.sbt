@@ -4,10 +4,11 @@ organization := "org.tupol"
 
 scalaVersion := "2.11.12"
 
-val sparkUtilsVersion = "0.4.0"
-val sparkVersion = "2.3.2"
+val sparkUtilsVersion = "0.4.1-SNAPSHOT"
+val sparkVersion = "2.4.3"
 val sparkXmlVersion = "0.4.1"
 val sparkAvroVersion = "4.0.0"
+val deltaVersion = "0.3.0"
 
 // ------------------------------
 // DEPENDENCIES AND RESOLVERS
@@ -16,14 +17,11 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 resolvers += "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases"
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
-
 lazy val providedDependencies = Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion force(),
   "org.apache.spark" %% "spark-sql" % sparkVersion force(),
   "org.apache.spark" %% "spark-mllib" % sparkVersion force(),
-  "org.apache.spark" %% "spark-streaming" % sparkVersion force(),
-  "com.databricks" %% "spark-xml" % sparkXmlVersion,
-  "com.databricks" %% "spark-avro" % sparkAvroVersion
+  "org.apache.spark" %% "spark-streaming" % sparkVersion force()
 )
 
 libraryDependencies ++= providedDependencies.map(_ % "provided")
@@ -33,8 +31,10 @@ libraryDependencies ++= Seq(
   "org.tupol" %% "spark-utils" % sparkUtilsVersion % "test" classifier "tests",
   "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+  "org.apache.spark" %% "spark-avro" % sparkVersion % "test",
   "com.databricks" %% "spark-xml" % sparkXmlVersion % "test",
-  "com.databricks" %% "spark-avro" % sparkAvroVersion % "test"
+  "com.databricks" %% "spark-avro" % sparkAvroVersion % "test",
+  "io.delta" %% "delta-core" % deltaVersion % "test"
 )
 
 // ------------------------------
