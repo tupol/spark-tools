@@ -24,6 +24,7 @@ SOFTWARE.
 package org.tupol.spark.tools
 
 import com.typesafe.config.Config
+import org.apache.spark.sql.streaming.StreamingQuery
 import org.apache.spark.sql.{ DataFrame, SparkSession }
 import org.tupol.spark.implicits._
 import org.tupol.spark.io.streaming.structured.{ FileStreamDataSinkConfiguration, FileStreamDataSourceConfiguration }
@@ -35,17 +36,21 @@ import org.tupol.utils.config.Configurator
 import scala.util.Try
 
 /**
- * The StreamingSqlProcessor is a base class that can support multiple implementation, mainly designed to support registering
- * custom SQL functions (UDFs) to make them available while running the queries.
+ * The StreamingSqlProcessor is a base class that can support multiple implementation, mainly designed to
+ * support registering custom SQL functions (UDFs) to make them available while running the queries.
  */
-abstract class FileStreamingSqlProcessor extends SparkApp[FileStreamingSqlProcessorContext, DataFrame] {
+abstract class FileStreamingSqlProcessor
+  extends SparkApp[FileStreamingSqlProcessorContext, (StreamingQuery, DataFrame)] {
 
   def registerSqlFunctions(implicit spark: SparkSession, context: FileStreamingSqlProcessorContext): Unit
 
   override def createContext(config: Config): FileStreamingSqlProcessorContext =
     FileStreamingSqlProcessorContext(config).get
 
-  override def run(implicit spark: SparkSession, context: FileStreamingSqlProcessorContext): DataFrame =
+  override def run(implicit
+    spark: SparkSession,
+                   context: FileStreamingSqlProcessorContext
+  ): (StreamingQuery, DataFrame) =
     {
       Try(registerSqlFunctions)
         .logSuccess(_ => logInfo(s"Successfully registered the custom SQL functions."))
@@ -54,25 +59,27 @@ abstract class FileStreamingSqlProcessor extends SparkApp[FileStreamingSqlProces
         case (tableName, inputConfig) =>
           spark.source(inputConfig).read.createOrReplaceTempView(tableName)
       }
-      val sqlResult = Try(spark.sql(context.renderedSql))
-        .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}."))
-        .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}.", _))
+      val sqlResult: DataFrame = Try(spark.sql(context.renderedSql))
+        .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}"))
+        .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}", _))
         .get
-      sqlResult.streamingSink(context.outputConfig).write.awaitTermination()
-      sqlResult
+      val streamingQuery: StreamingQuery = sqlResult.streamingSink(context.outputConfig).write
+      sys.addShutdownHook(streamingQuery.awaitTermination(10000))
+      (streamingQuery, sqlResult)
     }
-
 }
 
 case class FileStreamingSqlProcessorContext(
   inputTables:    Map[String, FileStreamDataSourceConfiguration],
   inputVariables: Map[String, String],
-  outputConfig:   FileStreamDataSinkConfiguration, sql: String
+  outputConfig:   FileStreamDataSinkConfiguration,
+  sql:            String
 ) {
   def renderedSql: String = replaceVariables(sql, inputVariables)
 }
 
-object FileStreamingSqlProcessorContext extends Configurator[FileStreamingSqlProcessorContext] with Logging {
+object FileStreamingSqlProcessorContext
+  extends Configurator[FileStreamingSqlProcessorContext] with Logging {
 
   import com.typesafe.config.Config
   import org.tupol.utils.config._

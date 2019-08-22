@@ -21,14 +21,20 @@ lazy val providedDependencies = Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion force(),
   "org.apache.spark" %% "spark-sql" % sparkVersion force(),
   "org.apache.spark" %% "spark-mllib" % sparkVersion force(),
-  "org.apache.spark" %% "spark-streaming" % sparkVersion force()
+  "org.apache.spark" %% "spark-streaming" % sparkVersion force(),
+  "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
+  "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion
 )
 
 libraryDependencies ++= providedDependencies.map(_ % "provided")
 
+// Jackson dependencies over Spark and Kafka Versions can be tricky; for Spark 2.4.x we need this override
+dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7"
+
 libraryDependencies ++= Seq(
   "org.tupol" %% "spark-utils" % sparkUtilsVersion,
   "org.tupol" %% "spark-utils" % sparkUtilsVersion % "test" classifier "tests",
+  "net.manub" %% "scalatest-embedded-kafka" % "2.0.0" % "test",
   "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.apache.spark" %% "spark-avro" % sparkVersion % "test",

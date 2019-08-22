@@ -121,7 +121,7 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
   }
 
   test("SimpleSqlProcessor.run fails if the input files can not be found") {
-    val filePath1 = new File("/path/that/does/not/exist/nor/it/should/exist/no_name.unknown_extension").getAbsolutePath
+    val filePath1 = new File("/doodely/doo/floppity.flop").getAbsolutePath
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
     )

@@ -25,6 +25,7 @@ package org.tupol.spark.tools
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.streaming.StreamingQuery
 import org.tupol.spark.SparkApp
 import org.tupol.spark.implicits._
 import org.tupol.spark.io.FormatType
@@ -49,11 +50,11 @@ import org.tupol.utils.config.Configurator
  *      [[https://github.com/databricks/spark-avro]]</li>
  * </ul>
  */
-object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext, Unit] {
+object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext, StreamingQuery] {
 
   override def createContext(config: Config): StreamingFormatConverterContext = StreamingFormatConverterContext(config).get
 
-  override def run(implicit spark: SparkSession, context: StreamingFormatConverterContext): Unit = {
+  override def run(implicit spark: SparkSession, context: StreamingFormatConverterContext): StreamingQuery = {
     val inputData = context.input match {
       case _: KafkaStreamDataSourceConfiguration =>
         spark.source(context.input).read.selectExpr(
@@ -63,9 +64,10 @@ object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext
       case _ => spark.source(context.input).read
     }
     val writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
-    writeableData.streamingSink(context.output).write.awaitTermination()
+    val streamingQuery: StreamingQuery = writeableData.streamingSink(context.output).write
+    sys.addShutdownHook(streamingQuery.awaitTermination(10000))
+    streamingQuery
   }
-
 }
 
 /**
