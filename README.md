@@ -1,12 +1,12 @@
 # Spark Tools #
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.tupol/spark-tools_2.11.svg)](https://mvnrepository.com/artifact/org.tupol/spark-tools) &nbsp;
-[![GitHub](https://img.shields.io/github/license/tupol/spark-tools.svg)](https://github.com/tupol/spark-tools/blob/master/LICENSE) &nbsp; 
-[![Travis (.org)](https://img.shields.io/travis/tupol/spark-tools.svg)](https://travis-ci.com/tupol/spark-tools) &nbsp; 
-[![Codecov](https://img.shields.io/codecov/c/github/tupol/spark-tools.svg)](https://codecov.io/gh/tupol/spark-tools) &nbsp;
-[![Javadocs](https://www.javadoc.io/badge/org.tupol/spark-tools_2.11.svg)](https://www.javadoc.io/doc/org.tupol/spark-tools_2.11) &nbsp;
-[![Gitter](https://badges.gitter.im/spark-tools/community.svg)](https://gitter.im/spark-tools/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) &nbsp; 
-[![Twitter](https://img.shields.io/twitter/url/https/_tupol.svg?color=%2317A2F2)](https://twitter.com/_tupol) &nbsp; 
+[![Maven Central](https://img.shields.io/maven-central/v/org.tupol/spark-tools_2.11.svg)][maven-central] &nbsp;
+[![GitHub](https://img.shields.io/github/license/tupol/spark-tools.svg)][license] &nbsp; 
+[![Travis (.org)](https://img.shields.io/travis/tupol/spark-tools.svg)][travis.org] &nbsp; 
+[![Codecov](https://img.shields.io/codecov/c/github/tupol/spark-tools.svg)][codecov] &nbsp;
+[![Javadocs](https://www.javadoc.io/badge/org.tupol/spark-tools_2.11.svg)][javadocs] &nbsp;
+[![Gitter](https://badges.gitter.im/spark-tools/community.svg)][gitter] &nbsp; 
+[![Twitter](https://img.shields.io/twitter/url/https/_tupol.svg?color=%2317A2F2)][twitter] &nbsp; 
 
 ## Description ##
 This project contains some basic runnable tools that can help with various tasks around a Spark based project.
@@ -20,17 +20,22 @@ The main tools available:
   stream format into a different data stream format, providing also partitioning support.
 - [SimpleFileStreamingSqlProcessor](docs/file-streaming-sql-processor.md) Applies a given SQL to the input files streams which are being mapped into file output streams.
 
+This project is also trying to create and encourage a friendly yet professional environment 
+for developers to help each other, so please do no be shy and join through [gitter], [twitter], 
+[issue reports](https://github.com/tupol/spark-tools/issues/new/choose) or pull requests.
+
 
 ## Prerequisites ##
 
 * Java 6 or higher
 * Scala 2.11 or 2.12
-* Apache Spark 2.3.X
+* Apache Spark 2.3.X or higher
 
 
 ## Getting Spark Tools ##
 
-Spark Tools is published to Sonatype OSS and [Maven Central](https://mvnrepository.com/artifact/org.tupol/spark-tools),
+Spark Tools is published to [Maven Central][maven-central] and [Spark Packages][spark-packages]:
+
 where the latest artifacts can be found.
 
 - Group id / organization: `org.tupol`
@@ -42,6 +47,12 @@ Usage with SBT, adding a dependency to the latest version of tools to your sbt b
 ```scala
 libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0"
 ```
+
+Include this package in your Spark Applications using `spark-shell` or `spark-submit`
+```bash
+$SPARK_HOME/bin/spark-shell --packages org.tupol:spark-tools_2.11:0.3.0
+```
+
 
 ## What's new? ##
 
@@ -58,21 +69,21 @@ libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0"
 - Added `StreamingFormatConverter`
 - Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
 
-**0.2.1**
-
-- Started using `spark-utils` `0.3.1` to benefit from variable substitution
-
-**0.2.0**
-
-- Started using `spark-utils` `0.3.0` and made the necessary API changes
-
-**0.1.0**
-
-- Added `FormatConverter`
-- Added `SqlProcessor` base class
-- Added `SimpleSqlProcessor` implementation
-
+For previous versions please consult the [release notes](RELEASE-NOTES.md).
 
 ## License ##
 
 This code is open source software licensed under the [MIT License](LICENSE).
+
+
+
+[scala]: https://scala-lang.org/
+[spark]: https://spark.apache.org/
+[maven-central]: https://mvnrepository.com/artifact/org.tupol/spark-tools
+[spark-packages]: https://spark-packages.org/package/tupol/spark-tools
+[license]: https://github.com/tupol/spark-tools/blob/master/LICENSE
+[travis.org]: https://travis-ci.com/tupol/spark-tools 
+[codecov]: https://codecov.io/gh/tupol/spark-tools
+[javadocs]: https://www.javadoc.io/doc/org.tupol/spark-tools_2.11
+[gitter]: https://gitter.im/spark-tools/community
+[twitter]: https://twitter.com/_tupol

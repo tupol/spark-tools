@@ -23,9 +23,8 @@ SOFTWARE.
 */
 package org.tupol.spark.tools
 
-import com.typesafe.config.Config
 import org.apache.spark.sql.{ DataFrame, SparkSession }
-import org.tupol.spark.SparkApp
+import org.tupol.spark.SparkFun
 import org.tupol.spark.implicits._
 import org.tupol.spark.io._
 import org.tupol.utils.config.Configurator
@@ -42,11 +41,11 @@ import org.tupol.utils.config.Configurator
  *      [[https://spark.apache.org/docs/2.1.1/api/java/org/apache/spark/sql/DataFrameReader.html#json(java.lang.String...)]]</li>
  *  <li>For the AVRO converter see more details here:
  *      [[https://github.com/databricks/spark-avro]]</li>
+ *  <li>For the DELTA converter see more details here:
+ *      [[https://github.com/delta-io/delta]]</li>
  * </ul>
  */
-object FormatConverter extends SparkApp[FormatConverterContext, DataFrame] {
-
-  override def createContext(config: Config): FormatConverterContext = FormatConverterContext(config).get
+object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](FormatConverterContext(_).get) {
 
   override def run(implicit spark: SparkSession, context: FormatConverterContext): DataFrame = {
     val inputData = spark.source(context.input).read
