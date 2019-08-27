@@ -60,6 +60,7 @@ $SPARK_HOME/bin/spark-shell --packages org.tupol:spark-tools_2.11:0.3.0
 
 - Added `StreamingFormatConverter`
 - Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
+- Bumped `spark-utils` dependency to `0.4.1`
 
 **0.3.0**
 

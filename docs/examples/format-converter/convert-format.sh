@@ -2,9 +2,19 @@
 
 echo "###############################################################################"
 echo "##                                                                           ##"
-echo "## Format Converter Script                                                   ##"
+echo "## Format Converter SAMPLE Script                                            ##"
 echo "##                                                                           ##"
 echo "###############################################################################"
+
+# The DELTA format only works on Spark 2.4.3 and higher
+# If you want to try a
+
+SPARK_HOME="/opt/spark-2.4.3-bin-hadoop2.7"
+if [ ! -d $SPARK_HOME ]; then
+  SPARK_SUBMIT=""
+fi
+
+echo "Using SPARK_HOME = $SPARK_HOME"
 
 
 ###############################################################################
@@ -40,7 +50,7 @@ SPARK_TOOLS_VERSION="0.4.0-SNAPSHOT"
 SPARK_TOOLS_JAR="$SPARK_TOOLS_ARTIFACT-$SPARK_TOOLS_VERSION.jar"
 
 SPARK_UTILS_ARTIFACT="spark-utils_2.11"
-SPARK_UTILS_VERSION="0.4.0"
+SPARK_UTILS_VERSION="0.4.1-SNAPSHOT"
 SPARK_UTILS_JAR="$SPARK_UTILS_ARTIFACT-$SPARK_UTILS_VERSION.jar"
 
 SCALA_UTILS_ARTIFACT="scala-utils_2.11"
@@ -84,9 +94,18 @@ if [ ! -f $SCALAZ_JAR ]; then
   wget "$URL"
 fi
 
+DELTA_JAR="delta-core_2.11-0.3.0.jar"
+if [ ! -f $DELTA_JAR ]; then
+  URL="https://repo1.maven.org/maven2/io/delta/delta-core_2.11/0.3.0/$DELTA_JAR"
+  echo "$DELTA_JAR was not found locally; bringing a version from $URL"
+  wget "$URL"
+fi
+
 cd ../
 
-JARS="$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$SCALAZ_JAR,$LIBS_DIR/$SCALA_UTILS_JAR,$LIBS_DIR/$SPARK_UTILS_JAR"
+JARS=$JARS",$LIBS_DIR/$SCALA_UTILS_JAR,$LIBS_DIR/$SPARK_UTILS_JAR"
+JARS=$JARS",$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$SCALAZ_JAR"
+JARS=$JARS",$LIBS_DIR/$DELTA_JAR"
 
 
 ###############################################################################
