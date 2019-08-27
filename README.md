@@ -40,35 +40,27 @@ where the latest artifacts can be found.
 
 - Group id / organization: `org.tupol`
 - Artifact id / name: `spark-tools`
-- Latest version is `0.3.0`
+- Latest version is `0.4.0`
 
 Usage with SBT, adding a dependency to the latest version of tools to your sbt build definition file:
 
 ```scala
-libraryDependencies += "org.tupol" %% "spark-tools" % "0.3.0"
+libraryDependencies += "org.tupol" %% "spark-tools" % "0.4.0"
 ```
 
 Include this package in your Spark Applications using `spark-shell` or `spark-submit`
 ```bash
-$SPARK_HOME/bin/spark-shell --packages org.tupol:spark-tools_2.11:0.3.0
+$SPARK_HOME/bin/spark-shell --packages org.tupol:spark-tools_2.11:0.4.0
 ```
 
 
 ## What's new? ##
 
-**0.4.0-SNAPSHOT**
+**0.4.1**
 
 - Added `StreamingFormatConverter`
 - Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
 - Bumped `spark-utils` dependency to `0.4.1`
-
-**0.3.0**
-
-- Package `processors` was renamed to `tools`
-- `SqlProcessor.registerSqlFunctions` takes now implicit parameters: spark session and 
-  application context
-- Added `StreamingFormatConverter`
-- Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
 
 For previous versions please consult the [release notes](RELEASE-NOTES.md).
 

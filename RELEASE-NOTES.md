@@ -3,14 +3,9 @@
 
 ## 0.4.0
 
-- Added the `StreamingConfiguration` marker trait
-- Added `GenericStreamDataSource`, `FileStreamDataSource` and `KafkaStreamDataSource`
-- Added `GenericStreamDataSink`, `FileStreamDataSink` and `KafkaStreamDataSink`
-- Added `FormatAwareStreamingSourceConfiguration` and `FormatAwareStreamingSinkConfiguration`
-- Extracted `TypesafeConfigBuilder`
-- API Changes: Added a new type parameter to the `DataSink` that describes the type of the output
-- Improved unit test coverage
-
+- Added `StreamingFormatConverter`
+- Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
+- Bumped `spark-utils` dependency to `0.4.1`
 
 ## 0.3.0
 
