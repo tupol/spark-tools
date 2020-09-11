@@ -27,9 +27,9 @@ for developers to help each other, so please do no be shy and join through [gitt
 
 ## Prerequisites ##
 
-* Java 6 or higher
+* Java 8 or higher
 * Scala 2.11 or 2.12
-* Apache Spark 2.3.X or higher
+* Apache Spark 2.4.X
 
 
 ## Getting Spark Tools ##
@@ -56,11 +56,17 @@ $SPARK_HOME/bin/spark-shell --packages org.tupol:spark-tools_2.11:0.4.0
 
 ## What's new? ##
 
-**0.4.1**
+**0.4.1-SNAPSHOT**
 
 - Added `StreamingFormatConverter`
 - Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
-- Bumped `spark-utils` dependency to `0.4.1`
+- Bumped `spark-utils` dependency to `0.4.2`
+- The project compiles with both Scala `2.11.12` and `2.12.12`
+- Updated Apache Spark to `2.4.6`
+- Updated `delta.io` to `0.6.1`
+- Updated the `spark-xml` library to `0.10.0`
+- Removed the `com.databricks:spark-avro` dependency, as avro support is now built into Apache Spark
+- Updated the `spark-utils` dependency to the latest available snapshot
 
 For previous versions please consult the [release notes](RELEASE-NOTES.md).
 

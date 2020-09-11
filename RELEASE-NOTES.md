@@ -1,5 +1,16 @@
 # Release Notes
 
+##  0.4.1-SNAPSHOT
+- Added `StreamingFormatConverter`
+- Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
+- Bumped `spark-utils` dependency to `0.4.2`
+- The project compiles with both Scala `2.11.12` and `2.12.12`
+- Updated Apache Spark to `2.4.6`
+- Updated `delta.io` to `0.6.1`
+- Updated the `spark-xml` library to `0.10.0`
+- Removed the `com.databricks:spark-avro` dependency, as avro support is now built into Apache Spark
+- Updated the `spark-utils` dependency to the latest available snapshot
+
 
 ## 0.4.0
 
