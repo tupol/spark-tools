@@ -2,13 +2,13 @@ name := "spark-tools"
 
 organization := "org.tupol"
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.12"
+crossScalaVersions := Seq("2.11.12", "2.12.12")
 
-val sparkUtilsVersion = "0.4.1"
-val sparkVersion = "2.4.3"
-val sparkXmlVersion = "0.4.1"
-val sparkAvroVersion = "4.0.0"
-val deltaVersion = "0.3.0"
+val sparkUtilsVersion = "0.4.2"
+val sparkVersion = "2.4.6"
+val sparkXmlVersion = "0.10.0"
+val deltaVersion = "0.6.1"
 
 // ------------------------------
 // DEPENDENCIES AND RESOLVERS
@@ -32,6 +32,7 @@ libraryDependencies ++= providedDependencies.map(_ % "provided")
 dependencyOverrides += "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7"
 
 libraryDependencies ++= Seq(
+  "org.json4s" %% "json4s-native"     % "3.5.5",
   "org.tupol" %% "spark-utils" % sparkUtilsVersion,
   "org.tupol" %% "spark-utils" % sparkUtilsVersion % "test" classifier "tests",
   "net.manub" %% "scalatest-embedded-kafka" % "2.0.0" % "test",
@@ -39,7 +40,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.apache.spark" %% "spark-avro" % sparkVersion % "test",
   "com.databricks" %% "spark-xml" % sparkXmlVersion % "test",
-  "com.databricks" %% "spark-avro" % sparkAvroVersion % "test",
   "io.delta" %% "delta-core" % deltaVersion % "test"
 )
 
