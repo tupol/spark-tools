@@ -1,6 +1,6 @@
 # Release Notes
 
-##  0.4.1-SNAPSHOT
+##  0.4.1
 - Added `StreamingFormatConverter`
 - Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`
 - Bumped `spark-utils` dependency to `0.4.2`
