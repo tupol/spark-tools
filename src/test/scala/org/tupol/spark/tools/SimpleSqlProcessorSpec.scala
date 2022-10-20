@@ -1,16 +1,16 @@
 package org.tupol.spark.tools
 
-import java.io.File
-
+import com.typesafe.config.ConfigException.Missing
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.sql.AnalysisException
-import org.scalatest.{ FunSuite, Matchers }
+import org.scalatest.{FunSuite, Matchers}
 import org.tupol.spark.io.sources.JsonSourceConfiguration
-import org.tupol.spark.io.{ DataSinkException, DataSourceException, FileSinkConfiguration, FileSourceConfiguration, FormatType }
+import org.tupol.spark.io.{DataSinkException, DataSourceException, FileSinkConfiguration, FileSourceConfiguration, FormatType}
 import org.tupol.spark.testing._
-import org.tupol.spark.testing.files.{ TestTempFilePath1, TestTempFilePath2 }
-import org.tupol.spark.{ SharedSparkSession, io }
-import org.tupol.utils.config.ConfigurationException
+import org.tupol.spark.testing.files.{TestTempFilePath1, TestTempFilePath2}
+import org.tupol.spark.{SharedSparkSession, io}
+
+import java.io.File
 
 class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSession
   with TestTempFilePath1 with TestTempFilePath2 {
@@ -25,11 +25,11 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
 
-    val result = SimpleSqlProcessor.run
+    val result = SimpleSqlProcessor.run.get
 
     val expectedResult = spark.read.json(filePath1)
     result.schema shouldBe expectedResult.schema
-    result.comapreWith(expectedResult).areEqual(true) shouldBe true
+    result.compareWith(expectedResult).areEqual(true) shouldBe true
   }
 
   test("Select with variable substitution from a single file") {
@@ -42,11 +42,11 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, variables, outputConfig, sql)
 
-    val result = SimpleSqlProcessor.run
+    val result = SimpleSqlProcessor.run.get
 
     val expectedResult = spark.read.json(filePath1)
     result.schema shouldBe expectedResult.schema
-    result.comapreWith(expectedResult).areEqual(true) shouldBe true
+    result.compareWith(expectedResult).areEqual(true) shouldBe true
   }
 
   test("Select * from a single file with output partitions") {
@@ -59,11 +59,11 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]("id"))
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
 
-    val result = SimpleSqlProcessor.run
+    val result = SimpleSqlProcessor.run.get
 
     val expectedResult = spark.read.json(filePath1)
     result.schema shouldBe expectedResult.schema
-    result.comapreWith(expectedResult).areEqual(true) shouldBe true
+    result.compareWith(expectedResult).areEqual(true) shouldBe true
   }
 
   test("Select table1.* from two joined files") {
@@ -78,11 +78,11 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
 
-    val result = SimpleSqlProcessor.run
+    val result = SimpleSqlProcessor.run.get
 
     val expectedResult = spark.read.json(filePath1)
     result.schema shouldBe expectedResult.schema
-    result.comapreWith(expectedResult).areEqual(true) shouldBe true
+    result.compareWith(expectedResult).areEqual(true) shouldBe true
   }
 
   test("Select table2.* from two joined files") {
@@ -97,10 +97,10 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
 
-    val result = SimpleSqlProcessor.run
+    val result = SimpleSqlProcessor.run.get
     val expectedResult = spark.read.json(filePath2)
     result.schema shouldBe expectedResult.schema
-    result.comapreWith(expectedResult).areEqual(true) shouldBe true
+    result.compareWith(expectedResult).areEqual(true) shouldBe true
   }
 
   test("Select with wrong table name yields an exception") {
@@ -112,12 +112,12 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
 
-    an[AnalysisException] should be thrownBy SimpleSqlProcessor.run
+    an[AnalysisException] should be thrownBy SimpleSqlProcessor.run.get
   }
 
   test("SimpleSqlProcessor.buildConfig fails if the input configuration is incorrect") {
     val config = ConfigFactory.parseString("")
-    a[ConfigurationException] should be thrownBy SimpleSqlProcessor.createContext(config)
+    a[Missing] should be thrownBy SimpleSqlProcessor.createContext(config).get
   }
 
   test("SimpleSqlProcessor.run fails if the input files can not be found") {
@@ -128,7 +128,7 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val sql = "SELECT * FROM table1"
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
     implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
-    a[DataSourceException] should be thrownBy SimpleSqlProcessor.run
+    a[DataSourceException] should be thrownBy SimpleSqlProcessor.run.get
   }
 
   test("SimpleSqlProcessor.run fails if it is not possible to write to the output file") {
@@ -143,7 +143,7 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     // The first time it works just fine
     noException shouldBe thrownBy(SimpleSqlProcessor.run)
     // The second time it fails to overwrite
-    a[DataSinkException] should be thrownBy SimpleSqlProcessor.run
+    a[DataSinkException] should be thrownBy SimpleSqlProcessor.run.get
   }
 
 }

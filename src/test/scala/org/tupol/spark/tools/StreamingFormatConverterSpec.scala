@@ -35,11 +35,11 @@ class StreamingStreamingFormatConverterSpec extends FunSuite
 
     val genericSinkConfig = GenericStreamDataSinkConfiguration(FormatType.Json, Map(), Some("testQuery"),
       Some(Trigger.ProcessingTime("1 second")))
-    val sinkConfig = FileStreamDataSinkConfiguration(FormatType.Json, testPath2, genericSinkConfig, Some(testPath2))
+    val sinkConfig = FileStreamDataSinkConfiguration(testPath2, genericSinkConfig, Some(testPath2))
 
     implicit val config = StreamingFormatConverterContext(inputConfig, sinkConfig)
 
-    val streamingQuery = StreamingFormatConverter.run
+    val streamingQuery = StreamingFormatConverter.run.get
 
     val testMessages = (1 to 4).map(i => f"test-message-$i%02d")
 
@@ -49,7 +49,7 @@ class StreamingStreamingFormatConverterSpec extends FunSuite
 
     eventually {
       val writtenData: DataFrame = spark.read.json(testPath2)
-      writtenData.comapreWith(sourceData).areEqual(false) shouldBe true
+      writtenData.compareWith(sourceData).areEqual(false) shouldBe true
     }
 
     streamingQuery.stop
@@ -65,13 +65,13 @@ class StreamingStreamingFormatConverterSpec extends FunSuite
 
     val genericSinkConfig = GenericStreamDataSinkConfiguration(FormatType.Json, Map(), Some("testQuery"),
       Some(Trigger.ProcessingTime("1 second")))
-    val sinkConfig = FileStreamDataSinkConfiguration(FormatType.Json, testPath2, genericSinkConfig, Some(testPath2))
+    val sinkConfig = FileStreamDataSinkConfiguration(testPath2, genericSinkConfig, Some(testPath2))
 
     implicit val formatterConfig = StreamingFormatConverterContext(inputConfig, sinkConfig)
 
     withRunningKafka {
 
-      val streamingQuery = StreamingFormatConverter.run
+      val streamingQuery = StreamingFormatConverter.run.get
 
       val testMessages = (1 to 4).map(i => f"test-message-$i%02d")
       testMessages.foreach { message => publishStringMessageToKafka(topic, message) }
@@ -80,7 +80,7 @@ class StreamingStreamingFormatConverterSpec extends FunSuite
 
       eventually {
         val writtenData: DataFrame = spark.read.json(testPath2)
-        writtenData.select("value").comapreWith(sourceData).areEqual(false) shouldBe true
+        writtenData.select("value").compareWith(sourceData).areEqual(false) shouldBe true
       }
       streamingQuery.stop
     }

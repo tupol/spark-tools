@@ -10,7 +10,7 @@ import org.tupol.spark.testing.files.TestTempFilePath1
 
 class FormatConverterContextSpec extends FunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
 
-  val ReferenceSchema = loadSchemaFromFile("src/test/resources/sources/avro/sample_schema.json")
+  val ReferenceSchema = loadSchemaFromFile("src/test/resources/sources/avro/sample_schema.json").get
 
   test("FormatConverterConfig basic creation jdbc to jdbc ") {
     val configStr =
@@ -52,12 +52,12 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
       user = Some("USER_NAME"),
       password = Some("USER_PASS"),
       driver = Some("SOME_DRIVER"),
-      optionalSaveMode = Some("SOME_MODE"),
+      mode = Some("SOME_MODE"),
       options = Map("opt1" -> "val1")
     )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterContext(config)
+    val result = FormatConverterContext.extract(config)
     result.get shouldBe expected
   }
 
@@ -89,12 +89,12 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
       user = Some("USER_NAME"),
       password = Some("USER_PASS"),
       driver = Some("SOME_DRIVER"),
-      optionalSaveMode = Some("SOME_MODE"),
+      mode = Some("SOME_MODE"),
       options = Map("opt1" -> "val1")
     )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterContext(config)
+    val result = FormatConverterContext.extract(config)
     result.get shouldBe expected
   }
 
@@ -114,7 +114,7 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
          |output.format="text"
          |output.mode="MODE"
          |output.partition.columns=["OUTPUT_PATH"]
-         |output.partition.files=2
+         |output.partition.number=2
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 
@@ -136,7 +136,7 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
     )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterContext(config)
+    val result = FormatConverterContext.extract(config)
     result.get shouldBe expected
   }
 

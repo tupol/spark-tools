@@ -27,10 +27,12 @@ import com.typesafe.config.Config
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.streaming.StreamingQuery
 import org.tupol.spark.SparkApp
-import org.tupol.spark.implicits._
+import org.tupol.spark.io.implicits._
 import org.tupol.spark.io.FormatType
 import org.tupol.spark.io.streaming.structured._
-import org.tupol.utils.config.Configurator
+import org.tupol.configz._
+
+import scala.util.Try
 
 /**
  * Load a file into a [[org.apache.spark.sql.DataFrame]] and save it as a file in the specified path.
@@ -52,22 +54,23 @@ import org.tupol.utils.config.Configurator
  */
 object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext, StreamingQuery] {
 
-  override def createContext(config: Config): StreamingFormatConverterContext = StreamingFormatConverterContext(config).get
+  override def createContext(config: Config): Try[StreamingFormatConverterContext] = StreamingFormatConverterContext.extract(config)
 
-  override def run(implicit spark: SparkSession, context: StreamingFormatConverterContext): StreamingQuery = {
-    val inputData = context.input match {
-      case _: KafkaStreamDataSourceConfiguration =>
-        spark.source(context.input).read.selectExpr(
-          "CAST(key AS STRING)", "CAST(value AS STRING)", "topic", "partition", "offset",
-          "timestamp", "timestampType"
-        )
-      case _ => spark.source(context.input).read
-    }
-    val writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
-    val streamingQuery: StreamingQuery = writeableData.streamingSink(context.output).write
-    sys.addShutdownHook(streamingQuery.awaitTermination(10000))
-    streamingQuery
-  }
+  override def run(implicit spark: SparkSession, context: StreamingFormatConverterContext): Try[StreamingQuery] =
+    for {
+      inputData <- context.input match {
+        case _: KafkaStreamDataSourceConfiguration =>
+          spark.source(context.input).read.map(_.selectExpr(
+            "CAST(key AS STRING)", "CAST(value AS STRING)", "topic", "partition", "offset",
+            "timestamp", "timestampType"
+          ))
+        case _ => spark.source(context.input).read
+      }
+      writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
+      streamingQuery <- writeableData.streamingSink(context.output).write
+      _ = sys.addShutdownHook(streamingQuery.awaitTermination(10000))
+    } yield streamingQuery
+
 }
 
 /**
@@ -83,7 +86,7 @@ object StreamingFormatConverterContext extends Configurator[StreamingFormatConve
   import scalaz.ValidationNel
 
   def validationNel(config: Config): ValidationNel[Throwable, StreamingFormatConverterContext] = {
-    import org.tupol.utils.config._
+    import org.tupol.spark.io.configz._
     import scalaz.syntax.applicative._
 
     config.extract[FormatAwareStreamingSourceConfiguration]("input") |@|

@@ -17,12 +17,12 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
     val configStr =
       s"""
          |input.format=kafka
-         |input.kafka.bootstrap.servers=test_server_in
+         |input.kafkaBootstrapServers=test_server_in
          |input.subscription.type="assign"
          |input.subscription.value="topic_in"
          |
          |output.format=kafka
-         |output.kafka.bootstrap.servers=test_server_out
+         |output.kafkaBootstrapServers=test_server_out
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 
@@ -30,7 +30,7 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
     val expectedSink = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
     val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
 
-    val result = StreamingFormatConverterContext(config)
+    val result = StreamingFormatConverterContext.extract(config)
 
     result.get shouldBe expected
   }
@@ -39,7 +39,7 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
     val configStr =
       s"""
          |input.format=kafka
-         |input.kafka.bootstrap.servers=test_server_in
+         |input.kafkaBootstrapServers=test_server_in
          |input.subscription.type="assign"
          |input.subscription.value="topic_in"
          |
@@ -54,10 +54,10 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
 
     val expectedSource = KafkaStreamDataSourceConfiguration("test_server_in", KafkaSubscription("assign", "topic_in"))
     val expectedGenericSink = GenericStreamDataSinkConfiguration(Json, Map("key1" -> "val1", "key2" -> "val2"))
-    val expectedSink = FileStreamDataSinkConfiguration("my_path", expectedGenericSink)
+    val expectedSink = FileStreamDataSinkConfiguration("my_path", expectedGenericSink, None)
     val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
 
-    val result = StreamingFormatConverterContext(config)
+    val result = StreamingFormatConverterContext.extract(config)
 
     result.get shouldBe expected
   }
@@ -69,7 +69,7 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
          |input.path="input_path"
          |
          |output.format=kafka
-         |output.kafka.bootstrap.servers=test_server_out
+         |output.kafkaBootstrapServers=test_server_out
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 
@@ -77,7 +77,7 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
     val expectedSink = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
     val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
 
-    val result = StreamingFormatConverterContext(config)
+    val result = StreamingFormatConverterContext.extract(config)
 
     result.get shouldBe expected
   }

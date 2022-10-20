@@ -38,11 +38,11 @@ class SimpleFileStreamingSqlProcessorSpec extends FunSuite
     val testSQL = "SELECT * FROM table1"
     val genericSinkConfig = GenericStreamDataSinkConfiguration(FormatType.Json, Map(), None,
       Some(Trigger.ProcessingTime("1 second")))
-    val sinkConfig = FileStreamDataSinkConfiguration(FormatType.Text, testPath2, genericSinkConfig, Some(testPath2))
+    val sinkConfig = FileStreamDataSinkConfiguration(testPath2, genericSinkConfig, Some(testPath2))
 
     implicit val config = FileStreamingSqlProcessorContext(inputTables, Map(), sinkConfig, testSQL)
 
-    val (streamingQuery, _) = SimpleFileStreamingSqlProcessor.run
+    val (streamingQuery, _) = SimpleFileStreamingSqlProcessor.run.get
 
     val testMessages = (1 to 4).map(i => f"""{"value": "test-message-$i%02d"} """)
     testMessages.foreach { message => addFile(message, testFile1) }
@@ -70,11 +70,11 @@ class SimpleFileStreamingSqlProcessorSpec extends FunSuite
     val testSQL = "SELECT * FROM table1 WHERE value LIKE 'test-%-03'"
     val genericSinkConfig = GenericStreamDataSinkConfiguration(FormatType.Json, Map(), None,
       Some(Trigger.ProcessingTime("1 second")))
-    val sinkConfig = FileStreamDataSinkConfiguration(FormatType.Text, testPath2, genericSinkConfig, Some(testPath2))
+    val sinkConfig = FileStreamDataSinkConfiguration(testPath2, genericSinkConfig, Some(testPath2))
 
     implicit val config = FileStreamingSqlProcessorContext(inputTables, Map(), sinkConfig, testSQL)
 
-    val (streamingQuery, _) = SimpleFileStreamingSqlProcessor.run
+    val (streamingQuery, _) = SimpleFileStreamingSqlProcessor.run.get
 
     val testMessages = (1 to 4).map(i => f"""{"value": "test-message-$i%02d"} """)
     testMessages.foreach { message => addFile(message, testFile1) }

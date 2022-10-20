@@ -10,6 +10,7 @@ import org.tupol.spark.sql.loadSchemaFromFile
 import org.tupol.spark.testing.files.TestTempFilePath1
 
 import scala.util.Failure
+import org.tupol.spark.io.configz._
 
 class FileStreamingSqlProcessorContextSpec extends FunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
 
@@ -75,11 +76,12 @@ class FileStreamingSqlProcessorContextSpec extends FunSuite with Matchers with S
 
     val expectedSink = FileStreamDataSinkConfiguration(
       "/tmp/tests/test.json",
-      GenericStreamDataSinkConfiguration(format = Json, partitionColumns = Seq("id", "timestamp"))
+      GenericStreamDataSinkConfiguration(format = Json, partitionColumns = Seq("id", "timestamp")),
+      None
     )
     val expected = FileStreamingSqlProcessorContext(expectedInputTables, expectedVariables, expectedSink, expectedSql)
 
-    FileStreamingSqlProcessorContext(config).get shouldBe expected
+    FileStreamingSqlProcessorContext.extract(config).get shouldBe expected
 
   }
 
@@ -121,7 +123,7 @@ class FileStreamingSqlProcessorContextSpec extends FunSuite with Matchers with S
       """.stripMargin
     )
 
-    FileStreamingSqlProcessorContext(config) shouldBe a[Failure[_]]
+    FileStreamingSqlProcessorContext.extract(config) shouldBe a[Failure[_]]
 
   }
 

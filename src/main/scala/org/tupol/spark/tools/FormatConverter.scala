@@ -24,10 +24,12 @@ SOFTWARE.
 package org.tupol.spark.tools
 
 import org.apache.spark.sql.{ DataFrame, SparkSession }
+import org.tupol.configz._
 import org.tupol.spark.SparkFun
-import org.tupol.spark.implicits._
 import org.tupol.spark.io._
-import org.tupol.utils.config.Configurator
+import org.tupol.spark.io.implicits._
+
+import scala.util.Try
 
 /**
  * Load a file into a [[DataFrame]] and save it as a file in the specified path.
@@ -45,14 +47,14 @@ import org.tupol.utils.config.Configurator
  *      [[https://github.com/delta-io/delta]]</li>
  * </ul>
  */
-object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](FormatConverterContext(_).get) {
+object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](FormatConverterContext.extract(_)) {
 
-  override def run(implicit spark: SparkSession, context: FormatConverterContext): DataFrame = {
-    val inputData = spark.source(context.input).read
-    val writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
-    writeableData.sink(context.output).write
-  }
-
+  override def run(implicit spark: SparkSession, context: FormatConverterContext): Try[DataFrame] =
+    for {
+      inputData <- spark.source(context.input).read
+      writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
+      output <- writeableData.sink(context.output).write
+    } yield output
 }
 
 /**
@@ -69,7 +71,7 @@ object FormatConverterContext extends Configurator[FormatConverterContext] {
   import scalaz.ValidationNel
 
   def validationNel(config: Config): ValidationNel[Throwable, FormatConverterContext] = {
-    import org.tupol.utils.config._
+    import org.tupol.spark.io.configz._
     import scalaz.syntax.applicative._
 
     config.extract[FormatAwareDataSourceConfiguration]("input") |@|

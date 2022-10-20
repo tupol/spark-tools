@@ -67,7 +67,7 @@ class SqlProcessorContextSpec extends FunSuite with Matchers {
     val outputConfig = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]("id", "timestamp"))
     val expectedResult = SqlProcessorContext(expectedInputTablePaths, expectedVariables, outputConfig, expectedSql)
 
-    SqlProcessorContext(config).get shouldBe expectedResult
+    SqlProcessorContext.extract(config).get shouldBe expectedResult
 
   }
 
@@ -122,7 +122,7 @@ class SqlProcessorContextSpec extends FunSuite with Matchers {
     val expectedResult = SqlProcessorContext(expectedInputTablePaths, Map(), outputConfig,
       expectedSql)
 
-    SqlProcessorContext(config).get shouldBe expectedResult
+    SqlProcessorContext.extract(config).get shouldBe expectedResult
 
   }
 
@@ -171,7 +171,7 @@ class SqlProcessorContextSpec extends FunSuite with Matchers {
     val outputConfig = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]())
     val expectedResult = SqlProcessorContext(expectedInputTablePaths, Map(), outputConfig, expectedSql)
 
-    SqlProcessorContext(config).get shouldBe expectedResult
+    SqlProcessorContext.extract(config).get shouldBe expectedResult
 
   }
 
@@ -208,7 +208,7 @@ class SqlProcessorContextSpec extends FunSuite with Matchers {
       """.stripMargin
     )
 
-    SqlProcessorContext(config) shouldBe a[Failure[_]]
+    SqlProcessorContext.extract(config) shouldBe a[Failure[_]]
 
   }
 

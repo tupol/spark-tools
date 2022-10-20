@@ -25,12 +25,12 @@ package org.tupol.spark.tools
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.{ DataFrame, SparkSession }
-import org.tupol.spark.implicits._
+import org.tupol.spark.io.implicits._
 import org.tupol.spark.io.{ FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration }
 import org.tupol.spark.utils._
 import org.tupol.spark.{ Logging, SparkApp }
-import org.tupol.utils._
-import org.tupol.utils.config.Configurator
+import org.tupol.configz._
+import org.tupol.utils.implicits._
 
 import scala.util.Try
 
@@ -42,24 +42,23 @@ abstract class SqlProcessor extends SparkApp[SqlProcessorContext, DataFrame] {
 
   def registerSqlFunctions(implicit spark: SparkSession, context: SqlProcessorContext): Unit
 
-  override def createContext(config: Config): SqlProcessorContext =
-    SqlProcessorContext(config).get
+  override def createContext(config: Config): Try[SqlProcessorContext] =
+    SqlProcessorContext.extract(config)
 
-  override def run(implicit spark: SparkSession, context: SqlProcessorContext): DataFrame =
-    {
-      Try(registerSqlFunctions)
+  override def run(implicit spark: SparkSession, context: SqlProcessorContext): Try[DataFrame] =
+    for {
+      _ <- Try(registerSqlFunctions)
         .logSuccess(_ => logInfo(s"Successfully registered the custom SQL functions."))
         .logFailure(logError(s"Failed to register the custom SQL functions.", _))
-      context.inputTables.map {
+      _ <- context.inputTables.map {
         case (tableName, inputConfig) =>
-          spark.source(inputConfig).read.createOrReplaceTempView(tableName)
-      }
-      val sqlResult = Try(spark.sql(context.renderedSql))
+          spark.source(inputConfig).read.map(_.createOrReplaceTempView(tableName))
+      }.allOkOrFail
+      sqlResult <- Try(spark.sql(context.renderedSql))
         .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}."))
         .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}.", _))
-        .get
-      sqlResult.sink(context.outputConfig).write
-    }
+      output <- sqlResult.sink(context.outputConfig).write
+    } yield output
 
 }
 
@@ -74,7 +73,7 @@ case class SqlProcessorContext(
 object SqlProcessorContext extends Configurator[SqlProcessorContext] with Logging {
 
   import com.typesafe.config.Config
-  import org.tupol.utils.config._
+  import org.tupol.spark.io.configz._
   import scalaz.ValidationNel
 
   def validationNel(config: Config): ValidationNel[Throwable, SqlProcessorContext] = {

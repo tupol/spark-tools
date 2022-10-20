@@ -130,7 +130,7 @@ For more details about defining the data sinks please check the
 #### Kafka Parameters
 
 - `options` **Required**
-  - `kafka.bootstrap.servers` **Required** 
+  - `kafkaBootstrapServers` **Required** 
   - `assign` | `subscribe` | `subscribePattern` **Required** * 
   - `startingOffsets` *Optional* 
   - `endingOffsets` *Optional* 
@@ -162,7 +162,7 @@ For more details about defining the data sinks please check the
   
 #### Kafka Parameters
 
-- `kafka.bootstrap.servers` **Required** 
+- `kafkaBootstrapServers` **Required** 
 - `topic` **Required** 
 
 
