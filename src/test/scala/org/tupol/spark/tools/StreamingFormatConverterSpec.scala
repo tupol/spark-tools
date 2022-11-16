@@ -1,23 +1,25 @@
 package org.tupol.spark.tools
 
 import java.io.File
-
-import net.manub.embeddedkafka.{ EmbeddedKafka, EmbeddedKafkaConfig }
+import io.github.embeddedkafka.{EmbeddedKafka, EmbeddedKafkaConfig}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.streaming.Trigger
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.{ Seconds, Span }
-import org.scalatest.{ BeforeAndAfter, FunSuite, GivenWhenThen, Matchers }
+import org.scalatest.time.{Seconds, Span}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfter, GivenWhenThen}
 import org.tupol.spark.SharedSparkSession
 import org.tupol.spark.io.FormatType
 import org.tupol.spark.io.streaming.structured._
 import org.tupol.spark.testing._
-import org.tupol.spark.testing.files.{ TestTempFilePath1, TestTempFilePath2 }
+import org.tupol.spark.testing.files.{TestTempFilePath1, TestTempFilePath2}
 
+import java.nio.charset.Charset
 import scala.util.Random
 
-class StreamingStreamingFormatConverterSpec extends FunSuite
+class StreamingStreamingFormatConverterSpec extends AnyFunSuite
   with Matchers with GivenWhenThen with Eventually with BeforeAndAfter
   with SharedSparkSession with EmbeddedKafka
   with TestTempFilePath1 with TestTempFilePath2 {
@@ -89,6 +91,6 @@ class StreamingStreamingFormatConverterSpec extends FunSuite
 
   def addFile(text: String, parentFile: File): Unit = {
     val file = new File(parentFile, f"test-${math.abs(Random.nextLong())}%010d")
-    FileUtils.write(file, text)
+    FileUtils.write(file, text, Charset.defaultCharset)
   }
 }

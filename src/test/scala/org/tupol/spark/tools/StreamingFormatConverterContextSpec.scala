@@ -1,7 +1,8 @@
 package org.tupol.spark.tools
 
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{ FunSuite, Matchers }
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import org.tupol.spark.SharedSparkSession
 import org.tupol.spark.io.FormatType.{ Json, Kafka }
 import org.tupol.spark.io.sources.TextSourceConfiguration
@@ -9,7 +10,7 @@ import org.tupol.spark.io.streaming.structured.{ FileStreamDataSinkConfiguration
 import org.tupol.spark.sql.loadSchemaFromFile
 import org.tupol.spark.testing.files.TestTempFilePath1
 
-class StreamingFormatConverterContextSpec extends FunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
+class StreamingFormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
 
   val ReferenceSchema = loadSchemaFromFile("src/test/resources/sources/avro/sample_schema.json")
 
@@ -30,7 +31,7 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
     val expectedSink = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
     val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
 
-    val result = StreamingFormatConverterContext.extract(config)
+    val result = StreamingFormatConverterContext.create(config)
 
     result.get shouldBe expected
   }
@@ -57,7 +58,7 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
     val expectedSink = FileStreamDataSinkConfiguration("my_path", expectedGenericSink, None)
     val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
 
-    val result = StreamingFormatConverterContext.extract(config)
+    val result = StreamingFormatConverterContext.create(config)
 
     result.get shouldBe expected
   }
@@ -77,7 +78,7 @@ class StreamingFormatConverterContextSpec extends FunSuite with Matchers with Sh
     val expectedSink = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
     val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
 
-    val result = StreamingFormatConverterContext.extract(config)
+    val result = StreamingFormatConverterContext.create(config)
 
     result.get shouldBe expected
   }

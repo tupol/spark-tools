@@ -73,7 +73,7 @@ lazy val publishSettings = Seq(
 
 lazy val coverageSettings = Seq(
   coverageEnabled in Test := true,
-  coverageMinimum in Test := 90,
+  coverageMinimumStmtTotal in Test := 90,
   coverageFailOnMinimum in Test := true,
   coverageExcludedPackages := "org.apache.spark.ml.param.shared.*;.*BuildInfo.*;org.tupol.spark.Logging.*"
 )

@@ -25,12 +25,12 @@ package org.tupol.spark.tools
 
 import com.typesafe.config.Config
 import org.apache.spark.sql.streaming.StreamingQuery
-import org.apache.spark.sql.{ DataFrame, SparkSession }
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.tupol.spark.io.implicits._
-import org.tupol.spark.io.streaming.structured.{ FileStreamDataSinkConfiguration, FileStreamDataSourceConfiguration }
-import org.tupol.spark.utils._
-import org.tupol.spark.{ Logging, SparkApp }
-import org.tupol.configz._
+import org.tupol.spark.io.pureconf._
+import org.tupol.spark.io.pureconf.readers._
+import org.tupol.spark.io.streaming.structured.{FileStreamDataSinkConfiguration, FileStreamDataSourceConfiguration}
+import org.tupol.spark.SparkApp
 import org.tupol.utils.implicits._
 
 import scala.util.Try
@@ -44,8 +44,11 @@ abstract class FileStreamingSqlProcessor
 
   def registerSqlFunctions(implicit spark: SparkSession, context: FileStreamingSqlProcessorContext): Unit
 
-  override def createContext(config: Config): Try[FileStreamingSqlProcessorContext] =
-    FileStreamingSqlProcessorContext.extract(config)
+  override def createContext(config: Config): Try[FileStreamingSqlProcessorContext] = {
+    import pureconfig.generic.auto._
+    config.extract[FileStreamingSqlProcessorContext]
+  }
+
 
   override def run(implicit
     spark: SparkSession,
@@ -62,42 +65,15 @@ abstract class FileStreamingSqlProcessor
       sqlResult <- Try(spark.sql(context.renderedSql))
         .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}"))
         .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}", _))
-      streamingQuery <- sqlResult.streamingSink(context.outputConfig).write
+      streamingQuery <- sqlResult.streamingSink(context.output).write
     } yield (streamingQuery, sqlResult)
 
 }
 
 case class FileStreamingSqlProcessorContext(
-  inputTables:    Map[String, FileStreamDataSourceConfiguration],
-  inputVariables: Map[String, String],
-  outputConfig:   FileStreamDataSinkConfiguration,
-  sql:            String
+                                             inputTables:    Map[String, FileStreamDataSourceConfiguration],
+                                             output:   FileStreamDataSinkConfiguration,
+                                             sql:      Sql
 ) {
-  def renderedSql: String = replaceVariables(sql, inputVariables)
-}
-
-object FileStreamingSqlProcessorContext
-  extends Configurator[FileStreamingSqlProcessorContext] with Logging {
-
-  import com.typesafe.config.Config
-  import org.tupol.spark.io.configz._
-  import scalaz.ValidationNel
-
-  def validationNel(config: Config): ValidationNel[Throwable, FileStreamingSqlProcessorContext] = {
-    import scalaz.syntax.applicative._
-
-    val sql = config.extract[String]("input.sql.path").map { path =>
-      fuzzyLoadTextResourceFile(path).getOrElse {
-        logError("Failed loading the SQL query from the given path!")
-        "UNABLE TO LOAD SQL FROM THE GIVEN PATH!"
-      }
-    }.orElse(config.extract[String]("input.sql.line"))
-
-    config.extract[Map[String, FileStreamDataSourceConfiguration]]("input.tables") |@|
-      config.extract[Option[Map[String, String]]]("input.variables").map(_.getOrElse(Map())) |@|
-      config.extract[FileStreamDataSinkConfiguration]("output") |@|
-      sql apply
-      FileStreamingSqlProcessorContext.apply
-  }
-
+  def renderedSql: String = sql.render
 }

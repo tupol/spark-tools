@@ -35,16 +35,16 @@ LIBS_DIR="libs"
 mkdir -p $LIBS_DIR
 cd $LIBS_DIR
 
-SPARK_TOOLS_ARTIFACT="spark-tools_2.11"
+SPARK_TOOLS_ARTIFACT="spark-tools_2.12"
 SPARK_TOOLS_VERSION="0.4.1"
 SPARK_TOOLS_JAR="$SPARK_TOOLS_ARTIFACT-$SPARK_TOOLS_VERSION.jar"
 
-SPARK_UTILS_ARTIFACT="spark-utils_2.11"
+SPARK_UTILS_ARTIFACT="spark-utils_2.12"
 SPARK_UTILS_VERSION="0.4.2"
 SPARK_UTILS_JAR="$SPARK_UTILS_ARTIFACT-$SPARK_UTILS_VERSION.jar"
 
-SCALA_UTILS_ARTIFACT="scala-utils_2.11"
-SCALA_UTILS_VERSION="0.2.0"
+SCALA_UTILS_ARTIFACT="scala-utils_2.12"
+SCALA_UTILS_VERSION="1.1.2"
 SCALA_UTILS_JAR="$SCALA_UTILS_ARTIFACT-$SCALA_UTILS_VERSION.jar"
 
 function bring_tupol_artifact {
@@ -70,16 +70,23 @@ bring_tupol_artifact $SPARK_TOOLS_VERSION $SPARK_TOOLS_ARTIFACT
 bring_tupol_artifact $SPARK_UTILS_VERSION $SPARK_UTILS_ARTIFACT
 bring_tupol_artifact $SCALA_UTILS_VERSION $SCALA_UTILS_ARTIFACT
 
-TYPESAFE_CONFIG_JAR="config-1.3.0.jar"
+TYPESAFE_CONFIG_JAR="config-1.4.2.jar"
 if [ ! -f $TYPESAFE_CONFIG_JAR ]; then
-  URL="http://central.maven.org/maven2/com/typesafe/config/1.3.0/$TYPESAFE_CONFIG_JAR"
+  URL="http://central.maven.org/maven2/com/typesafe/config/1.4.2/$TYPESAFE_CONFIG_JAR"
   echo "$TYPESAFE_CONFIG_JAR was not found locally; bringing a version from $URL"
   wget "$URL"
 fi
 
-SCALAZ_JAR="scalaz-core_2.11-7.2.26.jar"
+SCALAZ_JAR="scalaz-core_2.12-7.2.28.jar"
 if [ ! -f $SCALAZ_JAR ]; then
-  URL="http://central.maven.org/maven2/org/scalaz/scalaz-core_2.11/7.2.26/$SCALAZ_JAR"
+  URL="http://central.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.2.28/$SCALAZ_JAR"
+  echo "$SCALAZ_JAR was not found locally; bringing a version from $URL"
+  wget "$URL"
+fi
+
+PURECONFIG_JAR="scalaz-core_2.12-7.2.28.jar"
+if [ ! -f $SCALAZ_JAR ]; then
+  URL="http://central.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.2.28/$SCALAZ_JAR"
   echo "$SCALAZ_JAR was not found locally; bringing a version from $URL"
   wget "$URL"
 fi

@@ -1,10 +1,10 @@
 # Spark Tools #
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.tupol/spark-tools_2.11.svg)][maven-central] &nbsp;
+[![Maven Central](https://img.shields.io/maven-central/v/org.tupol/spark-tools_2.12.svg)][maven-central] &nbsp;
 [![GitHub](https://img.shields.io/github/license/tupol/spark-tools.svg)][license] &nbsp; 
 [![Travis (.org)](https://img.shields.io/travis/tupol/spark-tools.svg)][travis.org] &nbsp; 
 [![Codecov](https://img.shields.io/codecov/c/github/tupol/spark-tools.svg)][codecov] &nbsp;
-[![Javadocs](https://www.javadoc.io/badge/org.tupol/spark-tools_2.11.svg)][javadocs] &nbsp;
+[![Javadocs](https://www.javadoc.io/badge/org.tupol/spark-tools_2.12.svg)][javadocs] &nbsp;
 [![Gitter](https://badges.gitter.im/spark-tools/community.svg)][gitter] &nbsp; 
 [![Twitter](https://img.shields.io/twitter/url/https/_tupol.svg?color=%2317A2F2)][twitter] &nbsp; 
 
@@ -51,7 +51,7 @@ libraryDependencies += "org.tupol" %% "spark-tools" % "0.4.1"
 Include this package in your Spark Applications using `spark-shell` or `spark-submit`
 with Scala 2.11
 ```bash
-$SPARK_HOME/bin/spark-shell --packages org.tupol:spark-tools_2.11:0.4.1
+$SPARK_HOME/bin/spark-shell --packages org.tupol:spark-tools_2.12:0.4.1
 ```
 or with Scala 2.12
 ```bash
@@ -87,6 +87,6 @@ This code is open source software licensed under the [MIT License](LICENSE).
 [license]: https://github.com/tupol/spark-tools/blob/master/LICENSE
 [travis.org]: https://travis-ci.com/tupol/spark-tools 
 [codecov]: https://codecov.io/gh/tupol/spark-tools
-[javadocs]: https://www.javadoc.io/doc/org.tupol/spark-tools_2.11
+[javadocs]: https://www.javadoc.io/doc/org.tupol/spark-tools_2.12
 [gitter]: https://gitter.im/spark-tools/community
 [twitter]: https://twitter.com/_tupol

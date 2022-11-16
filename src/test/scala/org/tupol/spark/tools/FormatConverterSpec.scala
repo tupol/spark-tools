@@ -1,7 +1,8 @@
 package org.tupol.spark.tools
 
 import org.apache.spark.sql.DataFrame
-import org.scalatest.{ FunSuite, Matchers }
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import org.tupol.spark.SharedSparkSession
 import org.tupol.spark.io.implicits._
 import org.tupol.spark.io.sources.{ AvroSourceConfiguration, GenericSourceConfiguration, ParquetSourceConfiguration }
@@ -9,7 +10,7 @@ import org.tupol.spark.io.{ FileSinkConfiguration, FileSourceConfiguration, Form
 import org.tupol.spark.testing._
 import org.tupol.spark.testing.files.TestTempFilePath1
 
-class FormatConverterSpec extends FunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
+class FormatConverterSpec extends AnyFunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
 
   test("FormatConverter basic run test from parquet to json") {
 

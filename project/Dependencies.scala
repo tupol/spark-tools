@@ -12,11 +12,11 @@ object Dependencies {
     val json4s = "3.6.8"
     val scala_logging = "3.9.2"
     val mockito = "1.14.4"
-    val typesafe_config = "1.4.0"
+    val typesafe_config = "1.4.2"
     val h2database = "1.4.197"
 
-    val spark = "3.0.1"
-    val delta = "0.7.0"
+    val spark = "3.2.1"
+    val delta = "1.2.1"
     val sparkXml = "0.13.0"
     val fasterxml = "2.10.0"
     val embeddedKafka = "3.0.0"
@@ -37,7 +37,7 @@ object Dependencies {
   )
 
   val MainDependencies: Seq[ModuleID] = Seq(
-    "org.tupol" %% "spark-utils" % Versions.sparkUtils cross CrossVersion.binary
+    "org.tupol" %% "spark-utils-io-pureconfig" % Versions.sparkUtils cross CrossVersion.binary
   )
 
   val ProvidedSparkDependencies: Seq[ModuleID] = Seq(

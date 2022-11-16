@@ -30,7 +30,6 @@ import org.tupol.spark.SparkApp
 import org.tupol.spark.io.implicits._
 import org.tupol.spark.io.FormatType
 import org.tupol.spark.io.streaming.structured._
-import org.tupol.configz._
 
 import scala.util.Try
 
@@ -54,7 +53,7 @@ import scala.util.Try
  */
 object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext, StreamingQuery] {
 
-  override def createContext(config: Config): Try[StreamingFormatConverterContext] = StreamingFormatConverterContext.extract(config)
+  override def createContext(config: Config): Try[StreamingFormatConverterContext] = StreamingFormatConverterContext.create(config)
 
   override def run(implicit spark: SparkSession, context: StreamingFormatConverterContext): Try[StreamingQuery] =
     for {
@@ -81,16 +80,9 @@ object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext
  */
 case class StreamingFormatConverterContext(input: FormatAwareStreamingSourceConfiguration, output: FormatAwareStreamingSinkConfiguration)
 
-object StreamingFormatConverterContext extends Configurator[StreamingFormatConverterContext] {
-
-  import scalaz.ValidationNel
-
-  def validationNel(config: Config): ValidationNel[Throwable, StreamingFormatConverterContext] = {
-    import org.tupol.spark.io.configz._
-    import scalaz.syntax.applicative._
-
-    config.extract[FormatAwareStreamingSourceConfiguration]("input") |@|
-      config.extract[FormatAwareStreamingSinkConfiguration]("output") apply
-      StreamingFormatConverterContext.apply
-  }
+object StreamingFormatConverterContext {
+  import org.tupol.spark.io.pureconf._
+  import pureconfig.generic.auto._
+  import org.tupol.spark.io.pureconf.streaming.structured.readers._
+  def create(config: Config): Try[StreamingFormatConverterContext] = config.extract[StreamingFormatConverterContext]
 }

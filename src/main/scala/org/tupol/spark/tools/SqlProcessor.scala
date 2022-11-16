@@ -24,12 +24,10 @@ SOFTWARE.
 package org.tupol.spark.tools
 
 import com.typesafe.config.Config
-import org.apache.spark.sql.{ DataFrame, SparkSession }
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.tupol.spark.io.implicits._
-import org.tupol.spark.io.{ FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration }
-import org.tupol.spark.utils._
-import org.tupol.spark.{ Logging, SparkApp }
-import org.tupol.configz._
+import org.tupol.spark.io.{FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration}
+import org.tupol.spark.SparkFun
 import org.tupol.utils.implicits._
 
 import scala.util.Try
@@ -38,12 +36,10 @@ import scala.util.Try
  * The SqlProcessor is a base class that can support multiple implementation, mainly designed to support registering
  * custom SQL functions (UDFs) to make them available while running the queries.
  */
-abstract class SqlProcessor extends SparkApp[SqlProcessorContext, DataFrame] {
+abstract class SqlProcessor extends SparkFun[SqlProcessorContext, DataFrame](SqlProcessorContext.create) {
+
 
   def registerSqlFunctions(implicit spark: SparkSession, context: SqlProcessorContext): Unit
-
-  override def createContext(config: Config): Try[SqlProcessorContext] =
-    SqlProcessorContext.extract(config)
 
   override def run(implicit spark: SparkSession, context: SqlProcessorContext): Try[DataFrame] =
     for {
@@ -57,40 +53,21 @@ abstract class SqlProcessor extends SparkApp[SqlProcessorContext, DataFrame] {
       sqlResult <- Try(spark.sql(context.renderedSql))
         .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}."))
         .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}.", _))
-      output <- sqlResult.sink(context.outputConfig).write
+      output <- sqlResult.sink(context.output).write
     } yield output
 
 }
 
 case class SqlProcessorContext(
   inputTables:    Map[String, FormatAwareDataSourceConfiguration],
-  inputVariables: Map[String, String],
-  outputConfig:   FormatAwareDataSinkConfiguration, sql: String
+  output:   FormatAwareDataSinkConfiguration,
+  sql: Sql
 ) {
-  def renderedSql: String = replaceVariables(sql, inputVariables)
+  def renderedSql: String = sql.render
 }
-
-object SqlProcessorContext extends Configurator[SqlProcessorContext] with Logging {
-
-  import com.typesafe.config.Config
-  import org.tupol.spark.io.configz._
-  import scalaz.ValidationNel
-
-  def validationNel(config: Config): ValidationNel[Throwable, SqlProcessorContext] = {
-    import scalaz.syntax.applicative._
-
-    val sql = config.extract[String]("input.sql.path").map { path =>
-      fuzzyLoadTextResourceFile(path).getOrElse {
-        logError("Failed loading the SQL query from the given path!")
-        "UNABLE TO LOAD SQL FROM THE GIVEN PATH!"
-      }
-    }.orElse(config.extract[String]("input.sql.line"))
-
-    config.extract[Map[String, FormatAwareDataSourceConfiguration]]("input.tables") |@|
-      config.extract[Option[Map[String, String]]]("input.variables").map(_.getOrElse(Map())) |@|
-      config.extract[FormatAwareDataSinkConfiguration]("output") |@|
-      sql apply
-      SqlProcessorContext.apply
-  }
-
+object SqlProcessorContext {
+  import org.tupol.spark.io.pureconf._
+  import pureconfig.generic.auto._
+  import org.tupol.spark.io.pureconf.readers._
+  def create(config: Config): Try[SqlProcessorContext] = config.extract[SqlProcessorContext]
 }

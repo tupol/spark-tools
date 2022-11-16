@@ -23,8 +23,8 @@ SOFTWARE.
 */
 package org.tupol.spark.tools
 
-import org.apache.spark.sql.{ DataFrame, SparkSession }
-import org.tupol.configz._
+import com.typesafe.config.Config
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.tupol.spark.SparkFun
 import org.tupol.spark.io._
 import org.tupol.spark.io.implicits._
@@ -47,7 +47,7 @@ import scala.util.Try
  *      [[https://github.com/delta-io/delta]]</li>
  * </ul>
  */
-object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](FormatConverterContext.extract(_)) {
+object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](FormatConverterContext.create(_)) {
 
   override def run(implicit spark: SparkSession, context: FormatConverterContext): Try[DataFrame] =
     for {
@@ -65,17 +65,9 @@ object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](Forma
  */
 case class FormatConverterContext(input: FormatAwareDataSourceConfiguration, output: FormatAwareDataSinkConfiguration)
 
-object FormatConverterContext extends Configurator[FormatConverterContext] {
-
-  import com.typesafe.config.Config
-  import scalaz.ValidationNel
-
-  def validationNel(config: Config): ValidationNel[Throwable, FormatConverterContext] = {
-    import org.tupol.spark.io.configz._
-    import scalaz.syntax.applicative._
-
-    config.extract[FormatAwareDataSourceConfiguration]("input") |@|
-      config.extract[FormatAwareDataSinkConfiguration]("output") apply
-      FormatConverterContext.apply
-  }
+object FormatConverterContext {
+  import org.tupol.spark.io.pureconf._
+  import pureconfig.generic.auto._
+  import org.tupol.spark.io.pureconf.readers._
+  def create(config: Config): Try[FormatConverterContext] = config.extract[FormatConverterContext]
 }

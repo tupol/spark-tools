@@ -1,9 +1,9 @@
 package org.tupol.spark.tools
 
-import com.typesafe.config.ConfigException.Missing
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.sql.AnalysisException
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import org.tupol.spark.io.sources.JsonSourceConfiguration
 import org.tupol.spark.io.{DataSinkException, DataSourceException, FileSinkConfiguration, FileSourceConfiguration, FormatType}
 import org.tupol.spark.testing._
@@ -12,7 +12,7 @@ import org.tupol.spark.{SharedSparkSession, io}
 
 import java.io.File
 
-class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSession
+class SimpleSqlProcessorSpec extends AnyFunSuite with Matchers with SharedSparkSession
   with TestTempFilePath1 with TestTempFilePath2 {
 
   test("Select * from a single file") {
@@ -20,10 +20,10 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
     )
-    val sql = "SELECT * FROM table1"
+    val sql = Sql.fromLine("SELECT * FROM table1").get
 
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
-    implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
 
     val result = SimpleSqlProcessor.run.get
 
@@ -37,10 +37,11 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
     )
-    val sql = "SELECT {{columns}} FROM {{table-name}}"
     val variables = Map("columns" -> "*", "table-name" -> "table1")
+    val sql = Sql.fromLine("SELECT {{columns}} FROM {{table-name}}", variables).get
+
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
-    implicit val context = SqlProcessorContext(inputTables, variables, outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
 
     val result = SimpleSqlProcessor.run.get
 
@@ -54,10 +55,10 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
     )
-    val sql = "SELECT * FROM table1"
+    val sql = Sql.fromLine("SELECT * FROM table1").get
 
     val outputConfig = io.FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]("id"))
-    implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
 
     val result = SimpleSqlProcessor.run.get
 
@@ -73,10 +74,10 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()),
       "table2" -> FileSourceConfiguration(filePath2, JsonSourceConfiguration())
     )
-    val sql = "SELECT table1.* FROM table1 INNER JOIN table2 on table1.id == table2.id"
+    val sql = Sql.fromLine("SELECT table1.* FROM table1 INNER JOIN table2 on table1.id == table2.id").get
 
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
-    implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
 
     val result = SimpleSqlProcessor.run.get
 
@@ -92,10 +93,10 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration()),
       "table2" -> FileSourceConfiguration(filePath2, JsonSourceConfiguration())
     )
-    val sql = "SELECT table2.* FROM table1 INNER JOIN table2 on table1.id == table2.id"
+    val sql = Sql.fromLine("SELECT table2.* FROM table1 INNER JOIN table2 on table1.id == table2.id").get
 
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
-    implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
 
     val result = SimpleSqlProcessor.run.get
     val expectedResult = spark.read.json(filePath2)
@@ -108,16 +109,16 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
     )
-    val sql = "SELECT * FROM UNKNOWN_TABLE"
+    val sql = Sql.fromLine("SELECT * FROM UNKNOWN_TABLE").get
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
-    implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
 
     an[AnalysisException] should be thrownBy SimpleSqlProcessor.run.get
   }
 
   test("SimpleSqlProcessor.buildConfig fails if the input configuration is incorrect") {
     val config = ConfigFactory.parseString("")
-    a[Missing] should be thrownBy SimpleSqlProcessor.createContext(config).get
+    an[Exception] should be thrownBy SimpleSqlProcessor.createContext(config).get
   }
 
   test("SimpleSqlProcessor.run fails if the input files can not be found") {
@@ -125,9 +126,9 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
     )
-    val sql = "SELECT * FROM table1"
+    val sql = Sql.fromLine("SELECT * FROM table1").get
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
-    implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
     a[DataSourceException] should be thrownBy SimpleSqlProcessor.run.get
   }
 
@@ -136,9 +137,9 @@ class SimpleSqlProcessorSpec extends FunSuite with Matchers with SharedSparkSess
     val inputTables = Map(
       "table1" -> FileSourceConfiguration(filePath1, JsonSourceConfiguration())
     )
-    val sql = "SELECT * FROM table1"
+    val sql = Sql.fromLine("SELECT * FROM table1").get
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json, None, None, Seq[String]())
-    implicit val context = SqlProcessorContext(inputTables, Map(), outputConfig, sql)
+    implicit val context = SqlProcessorContext(inputTables, outputConfig, sql)
 
     // The first time it works just fine
     noException shouldBe thrownBy(SimpleSqlProcessor.run)

@@ -1,14 +1,15 @@
 package org.tupol.spark.tools
 
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{ FunSuite, Matchers }
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import org.tupol.spark.SharedSparkSession
 import org.tupol.spark.io.{ FileSinkConfiguration, FileSourceConfiguration, FormatType, JdbcSinkConfiguration }
 import org.tupol.spark.io.sources.{ JdbcSourceConfiguration, TextSourceConfiguration }
 import org.tupol.spark.sql.loadSchemaFromFile
 import org.tupol.spark.testing.files.TestTempFilePath1
 
-class FormatConverterContextSpec extends FunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
+class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
 
   val ReferenceSchema = loadSchemaFromFile("src/test/resources/sources/avro/sample_schema.json").get
 
@@ -57,7 +58,7 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
     )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterContext.extract(config)
+    val result = FormatConverterContext.create(config)
     result.get shouldBe expected
   }
 
@@ -94,7 +95,7 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
     )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterContext.extract(config)
+    val result = FormatConverterContext.create(config)
     result.get shouldBe expected
   }
 
@@ -136,7 +137,7 @@ class FormatConverterContextSpec extends FunSuite with Matchers with SharedSpark
     )
     val expected = FormatConverterContext(expectedSource, expectedSink)
 
-    val result = FormatConverterContext.extract(config)
+    val result = FormatConverterContext.create(config)
     result.get shouldBe expected
   }
 
