@@ -6,7 +6,11 @@ import org.scalatest.matchers.should.Matchers
 import org.tupol.spark.SharedSparkSession
 import org.tupol.spark.io.FormatType.Json
 import org.tupol.spark.io.sources.JsonSourceConfiguration
-import org.tupol.spark.io.streaming.structured.{FileStreamDataSinkConfiguration, FileStreamDataSourceConfiguration, GenericStreamDataSinkConfiguration}
+import org.tupol.spark.io.streaming.structured.{
+  FileStreamDataSinkConfiguration,
+  FileStreamDataSourceConfiguration,
+  GenericStreamDataSinkConfiguration
+}
 import org.tupol.spark.sql.loadSchemaFromFile
 import org.tupol.spark.testing.files.TestTempFilePath1
 
@@ -14,7 +18,11 @@ import scala.util.Failure
 import org.tupol.spark.io.pureconf._
 import pureconfig.generic.auto._
 
-class FileStreamingSqlProcessorContextSpec extends AnyFunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
+class FileStreamingSqlProcessorContextSpec
+    extends AnyFunSuite
+    with Matchers
+    with SharedSparkSession
+    with TestTempFilePath1 {
 
   import org.tupol.spark.io.pureconf.streaming.structured.readers._
 
@@ -59,10 +67,12 @@ class FileStreamingSqlProcessorContextSpec extends AnyFunSuite with Matchers wit
 
     val expectedInputTables = Map(
       "table1" -> FileStreamDataSourceConfiguration(
-        "../../../src/test/resources/SqlProcessor/file1.json", JsonSourceConfiguration()
+        "../../../src/test/resources/SqlProcessor/file1.json",
+        JsonSourceConfiguration()
       ),
       "table2" -> FileStreamDataSourceConfiguration(
-        "../../../src/test/resources/SqlProcessor/file2.json", JsonSourceConfiguration()
+        "../../../src/test/resources/SqlProcessor/file2.json",
+        JsonSourceConfiguration()
       )
     )
 

@@ -20,7 +20,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-*/
+ */
 package org.tupol.spark.tools
 
 import com.typesafe.config.Config
@@ -53,21 +53,32 @@ import scala.util.Try
  */
 object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext, StreamingQuery] {
 
-  override def createContext(config: Config): Try[StreamingFormatConverterContext] = StreamingFormatConverterContext.create(config)
+  override def createContext(config: Config): Try[StreamingFormatConverterContext] =
+    StreamingFormatConverterContext.create(config)
 
   override def run(implicit spark: SparkSession, context: StreamingFormatConverterContext): Try[StreamingQuery] =
     for {
       inputData <- context.input match {
-        case _: KafkaStreamDataSourceConfiguration =>
-          spark.source(context.input).read.map(_.selectExpr(
-            "CAST(key AS STRING)", "CAST(value AS STRING)", "topic", "partition", "offset",
-            "timestamp", "timestampType"
-          ))
-        case _ => spark.source(context.input).read
-      }
-      writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
+                    case _: KafkaStreamDataSourceConfiguration =>
+                      spark
+                        .streamingSource(context.input)
+                        .read
+                        .map(
+                          _.selectExpr(
+                            "CAST(key AS STRING)",
+                            "CAST(value AS STRING)",
+                            "topic",
+                            "partition",
+                            "offset",
+                            "timestamp",
+                            "timestampType"
+                          )
+                        )
+                    case _ => spark.streamingSource(context.input).read
+                  }
+      writeableData  = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
       streamingQuery <- writeableData.streamingSink(context.output).write
-      _ = sys.addShutdownHook(streamingQuery.awaitTermination(10000))
+      _              = sys.addShutdownHook(streamingQuery.awaitTermination(10000))
     } yield streamingQuery
 
 }
@@ -78,7 +89,10 @@ object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext
  * @param input data source
  * @param output data sink
  */
-case class StreamingFormatConverterContext(input: FormatAwareStreamingSourceConfiguration, output: FormatAwareStreamingSinkConfiguration)
+case class StreamingFormatConverterContext(
+  input: FormatAwareStreamingSourceConfiguration,
+  output: FormatAwareStreamingSinkConfiguration
+)
 
 object StreamingFormatConverterContext {
   import org.tupol.spark.io.pureconf._

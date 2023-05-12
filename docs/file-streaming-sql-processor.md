@@ -29,7 +29,7 @@ $SPARK_TOOLS_JAR
 Notice the following variables:
 - `$APPLICATION_CONF` needs to point to a file actually called `application.conf`, somewhere int the local file system.
 - `$JARS` needs to contains the comma separated list of dependency jars; as of now this list contains the following jars:
-  - Scala 2.11: `config-1.4.2.jar`, `scalaz-core_2.12-7.2.28.jar`, `scala-utils_2.12-0.2.0.jar`, `spark-utils_2.12-0.4.2.jar`
+  - Scala 2.11: `config-1.4.2.jar`, `pureconfig-core_2.12-0.17.4.jar`, `scala-utils_2.12-0.2.0.jar`, `spark-utils_2.12-0.4.2.jar`
   - Scala 2.12:  `config-1.4.2.jar`, `scalaz-core_2.12-7.2.26.jar`, `scala-utils_2.12-0.2.0.jar`, `spark-utils_2.12-0.4.2.jar`
 - `$SPARK_TOOLS_JAR` needs to contain the local path to the actual `spark-tools` jar:
   - Scala 2.11: `spark-tools_2.12-0.4.1.jar`

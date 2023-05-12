@@ -20,13 +20,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-*/
+ */
 package org.tupol.spark.tools
 
 import com.typesafe.config.Config
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{ DataFrame, SparkSession }
 import org.tupol.spark.io.implicits._
-import org.tupol.spark.io.{FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration}
+import org.tupol.spark.io.{ FormatAwareDataSinkConfiguration, FormatAwareDataSourceConfiguration }
 import org.tupol.spark.SparkFun
 import org.tupol.utils.implicits._
 
@@ -38,29 +38,28 @@ import scala.util.Try
  */
 abstract class SqlProcessor extends SparkFun[SqlProcessorContext, DataFrame](SqlProcessorContext.create) {
 
-
   def registerSqlFunctions(implicit spark: SparkSession, context: SqlProcessorContext): Unit
 
   override def run(implicit spark: SparkSession, context: SqlProcessorContext): Try[DataFrame] =
     for {
       _ <- Try(registerSqlFunctions)
-        .logSuccess(_ => logInfo(s"Successfully registered the custom SQL functions."))
-        .logFailure(logError(s"Failed to register the custom SQL functions.", _))
+            .logSuccess(_ => logInfo(s"Successfully registered the custom SQL functions."))
+            .logFailure(logError(s"Failed to register the custom SQL functions.", _))
       _ <- context.inputTables.map {
-        case (tableName, inputConfig) =>
-          spark.source(inputConfig).read.map(_.createOrReplaceTempView(tableName))
-      }.allOkOrFail
+            case (tableName, inputConfig) =>
+              spark.source(inputConfig).read.map(_.createOrReplaceTempView(tableName))
+          }.allOkOrFail
       sqlResult <- Try(spark.sql(context.renderedSql))
-        .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}."))
-        .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}.", _))
+                    .logSuccess(_ => logInfo(s"Successfully ran the following query:\n${context.renderedSql}."))
+                    .logFailure(logError(s"Failed to run the following query:\n${context.renderedSql}.", _))
       output <- sqlResult.sink(context.output).write
     } yield output
 
 }
 
 case class SqlProcessorContext(
-  inputTables:    Map[String, FormatAwareDataSourceConfiguration],
-  output:   FormatAwareDataSinkConfiguration,
+  inputTables: Map[String, FormatAwareDataSourceConfiguration],
+  output: FormatAwareDataSinkConfiguration,
   sql: Sql
 ) {
   def renderedSql: String = sql.render

@@ -6,11 +6,22 @@ import org.scalatest.matchers.should.Matchers
 import org.tupol.spark.SharedSparkSession
 import org.tupol.spark.io.FormatType.{ Json, Kafka }
 import org.tupol.spark.io.sources.TextSourceConfiguration
-import org.tupol.spark.io.streaming.structured.{ FileStreamDataSinkConfiguration, FileStreamDataSourceConfiguration, GenericStreamDataSinkConfiguration, KafkaStreamDataSinkConfiguration, KafkaStreamDataSourceConfiguration, KafkaSubscription }
+import org.tupol.spark.io.streaming.structured.{
+  FileStreamDataSinkConfiguration,
+  FileStreamDataSourceConfiguration,
+  GenericStreamDataSinkConfiguration,
+  KafkaStreamDataSinkConfiguration,
+  KafkaStreamDataSourceConfiguration,
+  KafkaSubscription
+}
 import org.tupol.spark.sql.loadSchemaFromFile
 import org.tupol.spark.testing.files.TestTempFilePath1
 
-class StreamingFormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSparkSession with TestTempFilePath1 {
+class StreamingFormatConverterContextSpec
+    extends AnyFunSuite
+    with Matchers
+    with SharedSparkSession
+    with TestTempFilePath1 {
 
   val ReferenceSchema = loadSchemaFromFile("src/test/resources/sources/avro/sample_schema.json")
 
@@ -28,8 +39,8 @@ class StreamingFormatConverterContextSpec extends AnyFunSuite with Matchers with
     val config = ConfigFactory.parseString(configStr)
 
     val expectedSource = KafkaStreamDataSourceConfiguration("test_server_in", KafkaSubscription("assign", "topic_in"))
-    val expectedSink = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
-    val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
+    val expectedSink   = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
+    val expected       = StreamingFormatConverterContext(expectedSource, expectedSink)
 
     val result = StreamingFormatConverterContext.create(config)
 
@@ -53,10 +64,10 @@ class StreamingFormatConverterContextSpec extends AnyFunSuite with Matchers with
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 
-    val expectedSource = KafkaStreamDataSourceConfiguration("test_server_in", KafkaSubscription("assign", "topic_in"))
+    val expectedSource      = KafkaStreamDataSourceConfiguration("test_server_in", KafkaSubscription("assign", "topic_in"))
     val expectedGenericSink = GenericStreamDataSinkConfiguration(Json, Map("key1" -> "val1", "key2" -> "val2"))
-    val expectedSink = FileStreamDataSinkConfiguration("my_path", expectedGenericSink, None)
-    val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
+    val expectedSink        = FileStreamDataSinkConfiguration("my_path", expectedGenericSink, None)
+    val expected            = StreamingFormatConverterContext(expectedSource, expectedSink)
 
     val result = StreamingFormatConverterContext.create(config)
 
@@ -75,8 +86,8 @@ class StreamingFormatConverterContextSpec extends AnyFunSuite with Matchers with
     val config = ConfigFactory.parseString(configStr)
 
     val expectedSource = FileStreamDataSourceConfiguration("input_path", TextSourceConfiguration())
-    val expectedSink = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
-    val expected = StreamingFormatConverterContext(expectedSource, expectedSink)
+    val expectedSink   = KafkaStreamDataSinkConfiguration("test_server_out", GenericStreamDataSinkConfiguration(Kafka))
+    val expected       = StreamingFormatConverterContext(expectedSource, expectedSink)
 
     val result = StreamingFormatConverterContext.create(config)
 

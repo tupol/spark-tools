@@ -7,7 +7,7 @@ import org.tupol.spark.io.pureconf._
 import org.tupol.spark.io.pureconf.readers._
 import pureconfig.generic.auto._
 import org.tupol.spark.io.sources.JsonSourceConfiguration
-import org.tupol.spark.io.{FileSinkConfiguration, FileSourceConfiguration, FormatType}
+import org.tupol.spark.io.{ FileSinkConfiguration, FileSourceConfiguration, FormatType }
 
 import scala.util.Failure
 
@@ -51,15 +51,22 @@ class SqlProcessorContextSpec extends AnyFunSuite with Matchers {
     )
 
     val expectedInputTablePaths = Map(
-      "table1" -> FileSourceConfiguration("../../../src/test/resources/SqlProcessor/file1.json", JsonSourceConfiguration()),
-      "table2" -> FileSourceConfiguration("../../../src/test/resources/SqlProcessor/file2.json", JsonSourceConfiguration())
+      "table1" -> FileSourceConfiguration(
+        "../../../src/test/resources/SqlProcessor/file1.json",
+        JsonSourceConfiguration()
+      ),
+      "table2" -> FileSourceConfiguration(
+        "../../../src/test/resources/SqlProcessor/file2.json",
+        JsonSourceConfiguration()
+      )
     )
 
     val expectedVariables = Map("table_name" -> "table1", "columns" -> "*")
 
     val expectedSql = Sql.fromFile("src/test/resources/SqlProcessor/test.sql", expectedVariables).get
 
-    val outputConfig = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]("id", "timestamp"))
+    val outputConfig =
+      FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]("id", "timestamp"))
     val expectedResult = SqlProcessorContext(expectedInputTablePaths, outputConfig, expectedSql)
 
     config.extract[SqlProcessorContext].get shouldBe expectedResult
@@ -100,8 +107,14 @@ class SqlProcessorContextSpec extends AnyFunSuite with Matchers {
     )
 
     val expectedInputTablePaths = Map(
-      "table1" -> FileSourceConfiguration("../../../src/test/resources/SqlProcessor/file1.json", JsonSourceConfiguration()),
-      "table2" -> FileSourceConfiguration("../../../src/test/resources/SqlProcessor/file2.json", JsonSourceConfiguration())
+      "table1" -> FileSourceConfiguration(
+        "../../../src/test/resources/SqlProcessor/file1.json",
+        JsonSourceConfiguration()
+      ),
+      "table2" -> FileSourceConfiguration(
+        "../../../src/test/resources/SqlProcessor/file2.json",
+        JsonSourceConfiguration()
+      )
     )
 
     config.extract[SqlProcessorContext] shouldBe a[Failure[_]]
@@ -143,13 +156,19 @@ class SqlProcessorContextSpec extends AnyFunSuite with Matchers {
     )
 
     val expectedInputTablePaths = Map(
-      "table1" -> FileSourceConfiguration("../../../src/test/resources/SqlProcessor/file1.json", JsonSourceConfiguration()),
-      "table2" -> FileSourceConfiguration("../../../src/test/resources/SqlProcessor/file2.json", JsonSourceConfiguration())
+      "table1" -> FileSourceConfiguration(
+        "../../../src/test/resources/SqlProcessor/file1.json",
+        JsonSourceConfiguration()
+      ),
+      "table2" -> FileSourceConfiguration(
+        "../../../src/test/resources/SqlProcessor/file2.json",
+        JsonSourceConfiguration()
+      )
     )
 
     val expectedSql = Sql.fromLine("""SELECT * FROM table1 where table1.id="1002"""").get
 
-    val outputConfig = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]())
+    val outputConfig   = FileSinkConfiguration("/tmp/tests/test.json", FormatType.Json, None, None, Seq[String]())
     val expectedResult = SqlProcessorContext(expectedInputTablePaths, outputConfig, expectedSql)
 
     config.extract[SqlProcessorContext].get shouldBe expectedResult

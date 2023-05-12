@@ -36,11 +36,11 @@ mkdir -p $LIBS_DIR
 cd $LIBS_DIR
 
 SPARK_TOOLS_ARTIFACT="spark-tools_2.12"
-SPARK_TOOLS_VERSION="0.4.1"
+SPARK_TOOLS_VERSION="1.0.0-SNAPSHOT"
 SPARK_TOOLS_JAR="$SPARK_TOOLS_ARTIFACT-$SPARK_TOOLS_VERSION.jar"
 
 SPARK_UTILS_ARTIFACT="spark-utils_2.12"
-SPARK_UTILS_VERSION="0.4.2"
+SPARK_UTILS_VERSION="1.0.0-RC4"
 SPARK_UTILS_JAR="$SPARK_UTILS_ARTIFACT-$SPARK_UTILS_VERSION.jar"
 
 SCALA_UTILS_ARTIFACT="scala-utils_2.12"
@@ -56,7 +56,7 @@ function bring_tupol_artifact {
   if [[ $VERSION == *"SNAPSHOT" ]]; then
     REPO_PATH="https://oss.sonatype.org/content/repositories/snapshots/org/tupol"
   else
-    REPO_PATH="http://central.maven.org/maven2/org/tupol"
+    REPO_PATH="https://repo1.maven.org/maven2/org/tupol"
   fi
   URL="$REPO_PATH/$ARTIFACT/$VERSION/$JAR"
 
@@ -77,10 +77,10 @@ if [ ! -f $TYPESAFE_CONFIG_JAR ]; then
   wget "$URL"
 fi
 
-SCALAZ_JAR="scalaz-core_2.12-7.2.28.jar"
-if [ ! -f $SCALAZ_JAR ]; then
-  URL="http://central.maven.org/maven2/org/scalaz/scalaz-core_2.12/7.2.28/$SCALAZ_JAR"
-  echo "$SCALAZ_JAR was not found locally; bringing a version from $URL"
+PURECONFIG_JAR="pureconfig_2.12-0.17.4.jar"
+if [ ! -f $PURECONFIG_JAR ]; then
+  URL="https://repo1.maven.org/maven2/com.github.pureconfig/pureconfig_2.12/0.17.4/$PURECONFIG_JAR"
+  echo "$PURECONFIG_JAR was not found locally; bringing a version from $URL"
   wget "$URL"
 fi
 
@@ -101,7 +101,7 @@ fi
 
 cd ../
 
-JARS="$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$SCALAZ_JAR,$LIBS_DIR/$SCALA_UTILS_JAR,$LIBS_DIR/$SPARK_UTILS_JAR"
+JARS="$LIBS_DIR/$TYPESAFE_CONFIG_JAR,$LIBS_DIR/$PURECONFIG_JAR,$LIBS_DIR/$SCALA_UTILS_JAR,$LIBS_DIR/$SPARK_UTILS_JAR"
 JARS="$JARS,$LIBS_DIR/$SPARK_SQL_KAFKA_JAR,$LIBS_DIR/$KAFKA_CLIENTS_JAR"
 
 
@@ -119,4 +119,26 @@ spark-submit  -v  \
 --files "$APPLICATION_CONF" \
 --jars "$JARS" \
 $LIBS_DIR/$SPARK_TOOLS_JAR
+
+spark-submit  -v  \
+--deploy-mode client \
+--class nl.schiphol.cdp.spark.datalake.landing.LandingJobRunner \
+--name LandingJobRunner \
+--conf spark.yarn.submit.waitAppCompletion=true \
+--queue default \
+/Users/oliver/.ivy2/local/nl.schiphol.cdp/cdp-spark-datalake_2.12/0.0.1+2-0d2c7d63+20230124-1226/jars/cdp-spark-datalake_2.12-assembly.jar \
+--appName LandingJobRunner \
+--schemaApiUrl localhost \
+--readerSchemaId 1-1-1-1-1 \
+--checkpointPath /tmp/test/cp \
+--destinationPath /tmp/test/dest \
+--kafkaHosts localhost \
+--kafkaTopic test \
+--kafkaIsSecure false \
+--startingOffset earliest \
+--trigger once \
+--exportMetrics true
+
+
+
 

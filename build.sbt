@@ -27,7 +27,6 @@ lazy val basicSettings = Seq(
 
 lazy val publishSettings = Seq(
   isSnapshot := version.value.trim.endsWith("SNAPSHOT"),
-  useGpg := true,
   // Nexus (see https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html)
   publishTo := {
     val repo = "https://oss.sonatype.org/"

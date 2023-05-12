@@ -20,11 +20,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-*/
+ */
 package org.tupol.spark.tools
 
 import com.typesafe.config.Config
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{ DataFrame, SparkSession }
 import org.tupol.spark.SparkFun
 import org.tupol.spark.io._
 import org.tupol.spark.io.implicits._
@@ -51,9 +51,9 @@ object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](Forma
 
   override def run(implicit spark: SparkSession, context: FormatConverterContext): Try[DataFrame] =
     for {
-      inputData <- spark.source(context.input).read
+      inputData     <- spark.source(context.input).read
       writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
-      output <- writeableData.sink(context.output).write
+      output        <- writeableData.sink(context.output).write
     } yield output
 }
 

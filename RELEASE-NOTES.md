@@ -1,5 +1,10 @@
 # Release Notes
 
+## 1.0.0-RC1
+- Using the new `spark-utils:1.0.0-RC4` library
+- Replaced the use of the `ScalaZ` based code with `PureConfig`
+
+
 ##  0.4.1
 - Added `StreamingFormatConverter`
 - Added `FileStreamingSqlProcessor`, `SimpleFileStreamingSqlProcessor`

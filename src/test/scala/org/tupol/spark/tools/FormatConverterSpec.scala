@@ -14,12 +14,12 @@ class FormatConverterSpec extends AnyFunSuite with Matchers with SharedSparkSess
 
   test("FormatConverter basic run test from parquet to json") {
 
-    val inputPath = "src/test/resources/sources/parquet/sample.parquet"
+    val inputPath     = "src/test/resources/sources/parquet/sample.parquet"
     val parserOptions = Map[String, String]()
-    val parserConfig = ParquetSourceConfiguration(parserOptions, None)
-    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
-    val inputData = spark.source(inputConfig).read.get
-    val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json)
+    val parserConfig  = ParquetSourceConfiguration(parserOptions, None)
+    val inputConfig   = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData     = spark.source(inputConfig).read.get
+    val outputConfig  = FileSinkConfiguration(testPath1, FormatType.Json)
 
     implicit val context = FormatConverterContext(inputConfig, outputConfig)
 
@@ -33,12 +33,12 @@ class FormatConverterSpec extends AnyFunSuite with Matchers with SharedSparkSess
 
   test("FormatConverter basic run test from databricks avro to json") {
 
-    val inputPath = "src/test/resources/sources/avro/sample.avro"
+    val inputPath     = "src/test/resources/sources/avro/sample.avro"
     val parserOptions = Map[String, String]()
-    val parserConfig = AvroSourceConfiguration(parserOptions, None)
-    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
-    val inputData = spark.source(inputConfig).read.get
-    val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json)
+    val parserConfig  = AvroSourceConfiguration(parserOptions, None)
+    val inputConfig   = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData     = spark.source(inputConfig).read.get
+    val outputConfig  = FileSinkConfiguration(testPath1, FormatType.Json)
 
     implicit val context = FormatConverterContext(inputConfig, outputConfig)
 
@@ -52,11 +52,11 @@ class FormatConverterSpec extends AnyFunSuite with Matchers with SharedSparkSess
 
   test("FormatConverter basic run test from spark avro to json") {
 
-    val inputPath = "src/test/resources/sources/avro/sample.avro"
-    val options = Map[String, String]("path" -> inputPath)
+    val inputPath   = "src/test/resources/sources/avro/sample.avro"
+    val options     = Map[String, String]("path" -> inputPath)
     val inputConfig = GenericSourceConfiguration(FormatType.Custom("avro"), options)
 
-    val inputData = spark.source(inputConfig).read.get
+    val inputData    = spark.source(inputConfig).read.get
     val outputConfig = FileSinkConfiguration(testPath1, FormatType.Json)
 
     implicit val context = FormatConverterContext(inputConfig, outputConfig)
@@ -71,15 +71,18 @@ class FormatConverterSpec extends AnyFunSuite with Matchers with SharedSparkSess
 
   test("FormatConverter basic run test from parquet to databricks avro") {
 
-    val inputPath = "src/test/resources/sources/parquet/sample.parquet"
+    val inputPath     = "src/test/resources/sources/parquet/sample.parquet"
     val parserOptions = Map[String, String]()
-    val parserConfig = ParquetSourceConfiguration(parserOptions, None)
-    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
-    val inputData = spark.source(inputConfig).read.get
+    val parserConfig  = ParquetSourceConfiguration(parserOptions, None)
+    val inputConfig   = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData     = spark.source(inputConfig).read.get
     val writerOptions = Map[String, String]("path" -> testPath1)
     val outputConfig = GenericSinkConfiguration(
       FormatType.Custom("avro"),
-      None, Seq(), None, writerOptions
+      None,
+      Seq(),
+      None,
+      writerOptions
     )
 
     implicit val context = FormatConverterContext(inputConfig, outputConfig)
@@ -94,12 +97,12 @@ class FormatConverterSpec extends AnyFunSuite with Matchers with SharedSparkSess
 
   test("FormatConverter basic run test from parquet to spark avro") {
 
-    val inputPath = "src/test/resources/sources/parquet/sample.parquet"
+    val inputPath     = "src/test/resources/sources/parquet/sample.parquet"
     val parserOptions = Map[String, String]()
-    val parserConfig = ParquetSourceConfiguration(parserOptions, None)
-    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
-    val inputData = spark.source(inputConfig).read.get
-    val outputConfig = FileSinkConfiguration(testPath1, FormatType.Avro)
+    val parserConfig  = ParquetSourceConfiguration(parserOptions, None)
+    val inputConfig   = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData     = spark.source(inputConfig).read.get
+    val outputConfig  = FileSinkConfiguration(testPath1, FormatType.Avro)
 
     implicit val context = FormatConverterContext(inputConfig, outputConfig)
 
@@ -113,15 +116,18 @@ class FormatConverterSpec extends AnyFunSuite with Matchers with SharedSparkSess
 
   test("FormatConverter basic run test from parquet to delta") {
 
-    val inputPath = "src/test/resources/sources/parquet/sample.parquet"
+    val inputPath     = "src/test/resources/sources/parquet/sample.parquet"
     val parserOptions = Map[String, String]()
-    val parserConfig = ParquetSourceConfiguration(parserOptions, None)
-    val inputConfig = FileSourceConfiguration(inputPath, parserConfig)
-    val inputData = spark.source(inputConfig).read.get
+    val parserConfig  = ParquetSourceConfiguration(parserOptions, None)
+    val inputConfig   = FileSourceConfiguration(inputPath, parserConfig)
+    val inputData     = spark.source(inputConfig).read.get
     val writerOptions = Map[String, String]("path" -> testPath1)
     val outputConfig = GenericSinkConfiguration(
       FormatType.Custom("delta"),
-      None, Seq(), None, writerOptions
+      None,
+      Seq(),
+      None,
+      writerOptions
     )
 
     implicit val context = FormatConverterContext(inputConfig, outputConfig)
