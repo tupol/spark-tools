@@ -16,24 +16,26 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
   test("FormatConverterConfig basic creation jdbc to jdbc ") {
     val configStr =
       s"""
-         |input.url="INPUT_URL"
-         |input.table="SOURCE_TABLE"
-         |input.user="USER_NAME"
-         |input.password="USER_PASS"
-         |input.driver="SOME_DRIVER"
-         |input.options={
-         |  opt1: "val1"
-         |}
-         |input.schema.path="/sources/avro/sample_schema.json"
-         |output.format="jdbc"
-         |output.url="OUTPUT_URL"
-         |output.table="SOURCE_TABLE"
-         |output.user="USER_NAME"
-         |output.password="USER_PASS"
-         |output.driver="SOME_DRIVER"
-         |output.mode="SOME_MODE"
-         |output.options={
-         |  opt1: "val1"
+         |FormatConverter {
+         |  input.url="INPUT_URL"
+         |  input.table="SOURCE_TABLE"
+         |  input.user="USER_NAME"
+         |  input.password="USER_PASS"
+         |  input.driver="SOME_DRIVER"
+         |  input.options={
+         |    opt1: "val1"
+         |  }
+         |  input.schema.path="/sources/avro/sample_schema.json"
+         |  output.format="jdbc"
+         |  output.url="OUTPUT_URL"
+         |  output.table="SOURCE_TABLE"
+         |  output.user="USER_NAME"
+         |  output.password="USER_PASS"
+         |  output.driver="SOME_DRIVER"
+         |  output.mode="SOME_MODE"
+         |  output.options={
+         |    opt1: "val1"
+         |  }
          |}
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
@@ -65,17 +67,19 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
   test("FormatConverterConfig basic creation file to jdbc ") {
     val configStr =
       s"""
-         |input.path="INPUT_PATH"
-         |input.format="text"
-         |output.format="jdbc"
-         |output.url="OUTPUT_URL"
-         |output.table="SOURCE_TABLE"
-         |output.user="USER_NAME"
-         |output.password="USER_PASS"
-         |output.driver="SOME_DRIVER"
-         |output.mode="SOME_MODE"
-         |output.options={
-         |  opt1: "val1"
+         |FormatConverter {
+         |  input.path="INPUT_PATH"
+         |  input.format="text"
+         |  output.format="jdbc"
+         |  output.url="OUTPUT_URL"
+         |  output.table="SOURCE_TABLE"
+         |  output.user="USER_NAME"
+         |  output.password="USER_PASS"
+         |  output.driver="SOME_DRIVER"
+         |  output.mode="SOME_MODE"
+         |  output.options={
+         |    opt1: "val1"
+         |  }
          |}
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
@@ -102,20 +106,22 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
   test("FormatConverterConfig basic creation jdbc to file ") {
     val configStr =
       s"""
-         |input.url="INPUT_URL"
-         |input.table="SOURCE_TABLE"
-         |input.user="USER_NAME"
-         |input.password="USER_PASS"
-         |input.driver="SOME_DRIVER"
-         |input.options={
-         |  opt1: "val1"
+         |FormatConverter: {
+         |  input.url="INPUT_URL"
+         |  input.table="SOURCE_TABLE"
+         |  input.user="USER_NAME"
+         |  input.password="USER_PASS"
+         |  input.driver="SOME_DRIVER"
+         |  input.options={
+         |    opt1: "val1"
+         |  }
+         |  input.schema: ${ReferenceSchema.prettyJson}
+         |  output.path="OUTPUT_PATH"
+         |  output.format="text"
+         |  output.mode="MODE"
+         |  output.partition.columns=["OUTPUT_PATH"]
+         |  output.partition.number=2
          |}
-         |input.schema: ${ReferenceSchema.prettyJson}
-         |output.path="OUTPUT_PATH"
-         |output.format="text"
-         |output.mode="MODE"
-         |output.partition.columns=["OUTPUT_PATH"]
-         |output.partition.number=2
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 

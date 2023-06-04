@@ -5,7 +5,7 @@ object Dependencies {
   object Versions {
     val scala           = "2.12.12"
     val crossScala      = Seq(scala)
-    val sparkUtils      = "1.0.0-RC4"
+    val sparkUtils      = "1.0.0-RC5-SNAPSHOT"
     val scalatest       = "3.1.1"
     val scalacheck      = "1.15.1"
     val json4s          = "3.6.8"

@@ -1,6 +1,7 @@
 import Dependencies._
 import sbt.Keys.{fork, resolvers}
 import sbt.{Developer, ScmInfo, url}
+import sbtassembly.AssemblyPlugin.defaultShellScript
 import sbtrelease.ReleaseStateTransformations.{checkSnapshotDependencies, commitNextVersion, commitReleaseVersion, inquireVersions, publishArtifacts, pushChanges, runClean, runTest, setNextVersion, setReleaseVersion, tagRelease}
 
 
@@ -77,6 +78,27 @@ lazy val coverageSettings = Seq(
   coverageExcludedPackages := "org.apache.spark.ml.param.shared.*;.*BuildInfo.*;org.tupol.spark.Logging.*"
 )
 
+
+
+lazy val assemblySettings =
+  Seq(
+    packageBin / assembleArtifact := true,
+    assemblyPackageScala / assembleArtifact := true,
+    assemblyPackageDependency / assembleArtifact := true,
+    assembly / assemblyOption := (assembly / assemblyOption).value
+      .copy(prependShellScript = Some(defaultShellScript)),
+    assembly / assemblyMergeStrategy := {
+      case "module-info.class"                               => MergeStrategy.discard
+      case x if x.endsWith("/module-info.class")             => MergeStrategy.discard
+      case x if x.contains("scala/annotation/nowarn.class")  => MergeStrategy.first
+      case x if x.endsWith("scala/annotation/nowarn$.class") => MergeStrategy.first
+      case PathList("META-INF", _)                           => MergeStrategy.discard
+      case x                                                 =>
+        val oldStrategy = (assembly / assemblyMergeStrategy).value
+        oldStrategy(x)
+    }
+  )
+
 val commonSettings = basicSettings ++ coverageSettings ++ publishSettings
 
 lazy val root = Project(
@@ -92,5 +114,16 @@ lazy val root = Project(
     buildInfoPackage := "org.tupol.spark.tools.info",
     libraryDependencies ++= Dependencies.MainDependencies,
     libraryDependencies ++= Dependencies.ProvidedSparkDependencies,
-    libraryDependencies ++= Dependencies.TestDependencies
+    libraryDependencies ++= Dependencies.TestDependencies,
+    assemblySettings,
+    assembly / assemblyJarName := s"${name.value}-pkg-${version.value}.jar",
+    assembly / artifact := {
+      val art = (assembly / artifact).value
+      art.withClassifier(Some("assembly"))
+    },
+    assembly / assemblyShadeRules := Seq(
+      ShadeRule.rename("shapeless.**" -> "new_shapeless.@1").inAll,
+      ShadeRule.rename("com.typesafe.config.**" -> "typesafe_config.@1").inAll
+    ),
+    addArtifact(assembly / artifact, assembly),
   )

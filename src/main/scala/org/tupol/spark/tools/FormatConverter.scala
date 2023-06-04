@@ -23,8 +23,8 @@ SOFTWARE.
  */
 package org.tupol.spark.tools
 
-import com.typesafe.config.Config
-import org.apache.spark.sql.{ DataFrame, SparkSession }
+import com.typesafe.config.{Config, ConfigRenderOptions }
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.tupol.spark.SparkFun
 import org.tupol.spark.io._
 import org.tupol.spark.io.implicits._
@@ -51,10 +51,13 @@ object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](Forma
 
   override def run(implicit spark: SparkSession, context: FormatConverterContext): Try[DataFrame] =
     for {
-      inputData     <- spark.source(context.input).read
+      inputData <- spark.source(context.input).read
       writeableData = if (context.output.format == FormatType.Avro) inputData.makeAvroCompliant else inputData
-      output        <- writeableData.sink(context.output).write
+      output <- writeableData.sink(context.output).write
     } yield output
+
+    override def getApplicationConfiguration(args: Array[String], configurationFileName: String): Try[Config] =
+    config.getApplicationConfiguration(args, configurationFileName)
 }
 
 /**
@@ -69,5 +72,12 @@ object FormatConverterContext {
   import org.tupol.spark.io.pureconf._
   import pureconfig.generic.auto._
   import org.tupol.spark.io.pureconf.readers._
-  def create(config: Config): Try[FormatConverterContext] = config.extract[FormatConverterContext]
+  def create(config: Config, path: String = "FormatConverter"): Try[FormatConverterContext] = {
+    println("==================================================================================================")
+    println(config.root().render(ConfigRenderOptions.defaults().setComments(false).setOriginComments(false)))
+    println("==================================================================================================")
+    println(config.getConfig(path).root().render(ConfigRenderOptions.defaults().setComments(false).setOriginComments(false)))
+    println("==================================================================================================")
+    Try(config.getConfig(path)).flatMap(_.extract[FormatConverterContext])
+  }
 }
