@@ -3,6 +3,7 @@ import sbt._
 object Dependencies {
 
   object Versions {
+    val java            = "1.8"
     val scala           = "2.12.12"
     val crossScala      = Seq(scala)
     val sparkUtils      = "1.0.0-RC5-SNAPSHOT"

@@ -16,7 +16,6 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
   test("FormatConverterConfig basic creation jdbc to jdbc ") {
     val configStr =
       s"""
-         |FormatConverter {
          |  input.url="INPUT_URL"
          |  input.table="SOURCE_TABLE"
          |  input.user="USER_NAME"
@@ -36,7 +35,6 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
          |  output.options={
          |    opt1: "val1"
          |  }
-         |}
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 
@@ -67,7 +65,6 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
   test("FormatConverterConfig basic creation file to jdbc ") {
     val configStr =
       s"""
-         |FormatConverter {
          |  input.path="INPUT_PATH"
          |  input.format="text"
          |  output.format="jdbc"
@@ -80,7 +77,6 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
          |  output.options={
          |    opt1: "val1"
          |  }
-         |}
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 
@@ -106,7 +102,6 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
   test("FormatConverterConfig basic creation jdbc to file ") {
     val configStr =
       s"""
-         |FormatConverter: {
          |  input.url="INPUT_URL"
          |  input.table="SOURCE_TABLE"
          |  input.user="USER_NAME"
@@ -121,7 +116,6 @@ class FormatConverterContextSpec extends AnyFunSuite with Matchers with SharedSp
          |  output.mode="MODE"
          |  output.partition.columns=["OUTPUT_PATH"]
          |  output.partition.number=2
-         |}
       """.stripMargin
     val config = ConfigFactory.parseString(configStr)
 

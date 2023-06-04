@@ -4,7 +4,6 @@ import sbt.{Developer, ScmInfo, url}
 import sbtassembly.AssemblyPlugin.defaultShellScript
 import sbtrelease.ReleaseStateTransformations.{checkSnapshotDependencies, commitNextVersion, commitReleaseVersion, inquireVersions, publishArtifacts, pushChanges, runClean, runTest, setNextVersion, setReleaseVersion, tagRelease}
 
-
 lazy val basicSettings = Seq(
   organization := "org.tupol",
   name := "spark-tools",
@@ -14,8 +13,10 @@ lazy val basicSettings = Seq(
     "-feature",
     "-deprecation",
     "-unchecked",
-    "-Ywarn-unused-import"
+    "-Ywarn-unused-import",
+    s"-target:jvm-${Versions.java}"
   ),
+  javacOptions ++= Seq("-source", Versions.java, "-target", Versions.java),
   updateOptions := updateOptions.value.withCachedResolution(true),
   libraryDependencies ++= TestDependencies,
   dependencyOverrides ++= FasterXmlOverrides,
@@ -77,8 +78,6 @@ lazy val coverageSettings = Seq(
   coverageFailOnMinimum in Test := true,
   coverageExcludedPackages := "org.apache.spark.ml.param.shared.*;.*BuildInfo.*;org.tupol.spark.Logging.*"
 )
-
-
 
 lazy val assemblySettings =
   Seq(

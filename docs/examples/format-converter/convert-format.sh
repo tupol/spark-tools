@@ -28,14 +28,14 @@ APPLICATION_CONF="$(pwd)/$USER_APPLICATION_CONF"
 ## Application & Dependencies Setup                                          ##
 ###############################################################################
 
+OUT_DIR="out"
+mkdir -p $OUT_DIR
+
 APP_DIR="app"
 mkdir -p $APP_DIR
 cd $APP_DIR
 
-
-OUT_DIR="out"
-mkdir -p $OUT_DIR
-cd $OUT_DIR
+cp $APPLICATION_CONF ./application.conf
 
 SPARK_TOOLS_ARTIFACT="spark-tools_2.12"
 SPARK_TOOLS_VERSION="assembly"
@@ -72,7 +72,6 @@ docker run --rm -it \
 -v "$SCRIPT_DIR/resources:/resources" \
 -v "$SCRIPT_DIR/$APP_DIR:/$APP_DIR" \
 -v "$SCRIPT_DIR/$OUT_DIR:/$OUT_DIR" \
--v "$APPLICATION_CONF:/$APP_DIR/application.conf" \
 apache/spark:v3.1.3 \
 /opt/spark/bin/spark-submit -v \
 --deploy-mode client \

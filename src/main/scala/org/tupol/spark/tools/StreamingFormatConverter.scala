@@ -27,6 +27,7 @@ import com.typesafe.config.Config
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.streaming.StreamingQuery
 import org.tupol.spark.SparkApp
+import org.tupol.spark.config.SimpleTypesafeConfigBuilder
 import org.tupol.spark.io.implicits._
 import org.tupol.spark.io.FormatType
 import org.tupol.spark.io.streaming.structured._
@@ -51,7 +52,7 @@ import scala.util.Try
  *      [[https://github.com/databricks/spark-avro]]</li>
  * </ul>
  */
-object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext, StreamingQuery] {
+object StreamingFormatConverter extends SparkApp[StreamingFormatConverterContext, StreamingQuery] with SimpleTypesafeConfigBuilder {
 
   override def createContext(config: Config): Try[StreamingFormatConverterContext] =
     StreamingFormatConverterContext.create(config)
