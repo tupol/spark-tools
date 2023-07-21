@@ -31,7 +31,6 @@ import org.tupol.spark.io.pureconf._
 import org.tupol.spark.io.pureconf.readers._
 import org.tupol.spark.io.streaming.structured.{FileStreamDataSinkConfiguration, FileStreamDataSourceConfiguration}
 import org.tupol.spark.SparkApp
-import org.tupol.spark.config.SimpleTypesafeConfigBuilder
 import org.tupol.utils.implicits._
 
 import scala.util.Try
@@ -41,7 +40,7 @@ import scala.util.Try
  * support registering custom SQL functions (UDFs) to make them available while running the queries.
  */
 abstract class FileStreamingSqlProcessor
-    extends SparkApp[FileStreamingSqlProcessorContext, (StreamingQuery, DataFrame)] with SimpleTypesafeConfigBuilder {
+    extends SparkApp[FileStreamingSqlProcessorContext, (StreamingQuery, DataFrame)] {
 
   def registerSqlFunctions(implicit spark: SparkSession, context: FileStreamingSqlProcessorContext): Unit
 

@@ -23,10 +23,9 @@ SOFTWARE.
  */
 package org.tupol.spark.tools
 
-import com.typesafe.config.{Config, ConfigRenderOptions}
+import com.typesafe.config.Config
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.tupol.spark.SparkFun
-import org.tupol.spark.config.SimpleTypesafeConfigBuilder
 import org.tupol.spark.io._
 import org.tupol.spark.io.implicits._
 
@@ -48,7 +47,7 @@ import scala.util.Try
  *      [[https://github.com/delta-io/delta]]</li>
  * </ul>
  */
-object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](FormatConverterContext.create(_)) with SimpleTypesafeConfigBuilder {
+object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](FormatConverterContext.create(_)) {
 
   override def run(implicit spark: SparkSession, context: FormatConverterContext): Try[DataFrame] =
     for {
@@ -57,8 +56,6 @@ object FormatConverter extends SparkFun[FormatConverterContext, DataFrame](Forma
       output <- writeableData.sink(context.output).write
     } yield output
 
-//    override def getApplicationConfiguration(args: Array[String], configurationFileName: String): Try[Config] =
-//    config.getApplicationConfiguration(args, configurationFileName)
 }
 
 /**

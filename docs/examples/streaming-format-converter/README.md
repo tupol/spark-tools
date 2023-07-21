@@ -18,7 +18,7 @@
 
 1. Create the input folder
   ```console
-  mkdir -p tmp/in-example-2
+  mkdir -p out/in-example-2
   ```
 2. Start the app
   ```console
@@ -26,7 +26,7 @@
   ```
 3. Push some data files in the input stream folder
   ```console
-  ../create-file-stream.sh resources/file1.json tmp/in-example-2 5
+  ../create-file-stream.sh resources/file1.json out/in-example-2 5
   ```
 4. Check the `tmp/out-example-2` folder for output
 
@@ -35,7 +35,7 @@
 
 1. Create the input folder
   ```console
-  mkdir -p tmp/in-example-3
+  mkdir -p out/in-example-3
   ```
 2. Start the app
   ```console
@@ -43,7 +43,7 @@
   ```
 3. Push some data files in the input stream folder
   ```console
-  ../create-file-stream.sh resources/file3.csv tmp/in-example-3 5
+  ../create-file-stream.sh resources/file3.csv out/in-example-3 5
   ```
 4. Check the `tmp/out-example-3` folder for output
 
@@ -52,7 +52,7 @@
 
 1. Create the input folder
   ```console
-  mkdir -p tmp/in-example-4
+  mkdir -p out/in-example-4
   ```
 2. Start the app
   ```console
@@ -60,7 +60,7 @@
   ```
 3. Push some data files in the input stream folder
   ```console
-  ../create-file-stream.sh resources/file3.csv tmp/in-example-4 5
+  ../create-file-stream.sh resources/file3.csv out/in-example-4 5
   ```
 4. Check the `tmp/out-example-4` folder for output
 
@@ -69,7 +69,7 @@
 
 1. Create the input folder
   ```console
-  mkdir -p tmp/in-example-5
+  mkdir -p out/in-example-5
   ```
 2. Start the app
   ```console
@@ -77,7 +77,7 @@
   ```
 3. Push some data files in the input stream folder
   ```console
-  ../create-file-stream.sh resources/file4.csv tmp/in-example-5 5
+  ../create-file-stream.sh resources/file4.csv out/in-example-5 5
   ```
 4. Check the `tmp/out-example-5` folder for output
 
@@ -98,7 +98,7 @@
   ```
 3. Push some data files in the input stream folder
   ```console
-  ../create-file-stream.sh resources/file4.csv tmp/in-example-5 5
+  ../create-file-stream.sh resources/file4.csv out/in-example-5 5
   ```
 4. Check the `tmp/out-example-5` folder for output
 
